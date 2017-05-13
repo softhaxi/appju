@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => APPJU\User::class,
+            'model' => APPJU\Models\Security\User::class,
         ],
 
         // 'users' => [
