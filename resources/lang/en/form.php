@@ -22,6 +22,7 @@ return [
     'import' => 'Import',
     'import_file' => 'Import File',
     'imported_file_xls_csv' => 'Imported File (XLS or CSV Format)', 
+    'inactive' => 'Inactive',
     'illegal_lighting' => 'Illegal Lighting',
     'kwh' => 'Kwh',
     'last_name' => 'Last Name',

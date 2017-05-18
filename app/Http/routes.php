@@ -29,6 +29,10 @@ Route::group(['middleware' => 'auth'], function () {
             return view('user.detail')
                 ->with('id', $id);
         });
+        Route::get('/edit/{id}', function ($id) {
+            return view('user.edit')
+                ->with('id', $id);
+        });
     });
     
     Route::group(['prefix' => 'streetlighting'], function() {
@@ -56,7 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => '/json'], function() {
         Route::group(['prefix' => '/user'], function() {
             Route::post('/', 'Security\UserController@post');
-            Route::post('/search', 'Security\UserController@search');
+            Route::post('/search', 'Security\UserController@find');
             Route::get('/{id}', 'Security\UserController@view');
         });
     });

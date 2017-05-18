@@ -58,7 +58,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            Username <span class="caret"></span>
+                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li class="clearfix">
@@ -82,7 +82,7 @@
             <div class="container">
                 <h3>{{trans('menu.user')}}</h3>
                 <div class="row">
-                    <form id="form-search" class="form-horizontal">
+                    <form id="form-search" class="form-horizontal" method="post">
                         <div class="form-group input-sm">
                             <label for="username" class="col-md-2 control-label">{{trans('form.username')}}</label>
                             <div class="col-md-4">
@@ -110,7 +110,7 @@
                         <div class="form-group input-sm">
                             <div class="col-md-offset-2 col-md-10">
                                 <div class="btn-group-sm">
-                                    <button type="submit" class="btn btn-default"><i class="fa fa-search fa-fw" aria-hidden="true"></i> {{trans('form.search')}}</button>
+                                    <button type="button" class="btn btn-default" onclick="doSearchForm();"><i class="fa fa-search fa-fw" aria-hidden="true"></i> {{trans('form.search')}}</button>
                                     <button type="button" class="btn btn-success" onclick="showNewUserForm();"><i class="fa fa-plus fa-fw" aria-hidden="true"></i> {{trans('form.add')}}</button>
                                     <!--<a href="{{url('/user/import')}}" class="btn btn-success" role="button">{{trans('form.import')}}</a>-->
                                 </div>
@@ -127,8 +127,8 @@
                             <tr>
                                 <th data-field="username" data-sortable="true" data-formatter="usernameFormatter">{{trans('form.username')}}</th>
                                 <th data-field="full_name" data-sortable="true">{{trans('form.full_name')}}</th>
-                                <th data-field="email" data-formatter="emailFormatter">{{trans('form.email')}}</th>
-                                <th data-field="mobile" data-formatter="mobileFormatter">{{trans('form.mobile')}}</th>
+                                <th data-field="email">{{trans('form.email')}}</th>
+                                <th data-field="mobile">{{trans('form.mobile')}}</th>
                                 <th data-field="device_code">{{trans('form.device_code')}}</th>
                                 <th data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
                                 <th data-formatter="actionFormatter"></th>
@@ -268,10 +268,7 @@
                     }
                 });
                 initTables();
-                $('#form-search-mutualfund').on('submit', function(event) {
-                    event.preventDefault();
-                    doSearchForm();
-                });
+                doSearchForm();
             });
 
             function initTables() {
@@ -434,8 +431,34 @@
 
             function doRedirectDetailUser(params) {
                 if(params.code == 202) {
-                    window.location.href = "{{url('/user/')}}" + params.data.id;
+                    window.location.href = "{{url('/user/')}}/" + params.data.id;
                 }
+            }
+
+            function doRedirectEditUser(id) {
+                window.location.href = "{{url('/user/edit')}}/" + id;
+            }
+
+            function usernameFormatter(value, row, index) {
+                return '<div class="text-center"><a href="{{url('/user')}}/' +row.id+'">'+value+'</a></div>';
+            }
+
+            function statusFormatter(value, row, index) {
+                if(row.status == 1) {
+                    return '<p class="text-primary text-center">{{trans('form.active')}}</p>';
+                } else {
+                    return '<p class="text-danger text-center">{{trans('form.inactive')}}</p>';
+                }
+            }
+
+            function actionFormatter(value, row, index) {
+                var buttons = '<div class="btn-group-xs text-center">';
+                buttons += ' <button class="btn btn-warning" onclick="doRedirectEditUser(' + 
+                        "'" + row.id + "'" + ')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></button>';
+                buttons += ' <button class="btn btn-danger" onclick="showDeleteConfirmation(' + 
+                        "'" + row.id + "','" + row.username + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+                buttons += '</div>';
+                return buttons;
             }
         </script>
     </body>

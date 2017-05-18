@@ -22,6 +22,44 @@ use Validator;
  * @since 1.0
  */
 class UserController extends Controller {
+
+    public function login(Request $request) {
+
+    }
+
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function find(Request $request) {
+        $users = $this->getUsers($request->all());
+        $data = [];
+        foreach ($users as $user) {
+            $full_name = $user->first_name;
+            if($user->middle_name != '') {
+                $full_name .= ' ' . $user->middle_name;
+            } 
+            $full_name .= ' ' . $user->last_name;
+            $item = [
+                'id' => $user->id,
+                'username' => $user->name,
+                'email' => $user->email,
+                'full_name' => $full_name,
+                'device_code' => $user->device_code,
+                'mobile' => $user->mobile,
+                'status' => $user->status
+            ];
+            $data[] = $item;
+        }
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
+    }
+
     /**
      * 
      * @param Request $request
@@ -44,7 +82,7 @@ class UserController extends Controller {
                     'errors' => $validator->messages()], 400);
         }
         $params = $request->all();
-        if($request->is('/json/user')) {
+        if($request->is('/json/*')) {
             $params['user_id'] = Auth::user()->id;
         }
         $user = $this->saveUser($params);
@@ -92,6 +130,20 @@ class UserController extends Controller {
                         'status' => 'OK',
                         'response' => 'Ok',
                         'data' => $data], 200);
+    }
+
+    /**
+     * 
+     * @param array $params
+     * @return List of User
+     */
+    private function getUsers(array $params) {
+        $users = User::where('status', 1)
+            ->where('level', 2)
+            ->get();
+        
+
+        return $users->all();
     }
 
     /**

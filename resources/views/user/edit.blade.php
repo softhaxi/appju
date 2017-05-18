@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{trans('menu.user_profile')}} · {{trans('app.name')}}</title>
+        <title>{{trans('menu.user_profile')}} · {{trans('button.edit')}} · {{trans('app.name')}}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
@@ -84,70 +84,71 @@
                         <div class="col-md-2">
                             <div class="text-center">
                                 <img src="http://placehold.it/100" class="avatar img-circle" alt="Avatar"/>
-                                
+                                <div class="clear-fix">&nbsp;</div>
+                                <input id="profile_image" name="profile_image" type="file" accept=".jpeg,.png">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div id="username-group" class="form-group mb5">
+                        <div class="col-md-7">
+                            <div id="username-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.username')}}</label>
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <input id="username" name="username" type="text" class="form-control" placeholder="{{trans('form.username')}}">
                                     <span class="help-block">
                                         <strong id="username-help" class="help-text"></strong>
                                     </span>
                                 </div>
                             </div>
-                            <div id="password-group" class="form-group mb5">
-                                <label class="col-md-3 control-label">{{trans('form.password')}}</label>
-                                <div class="col-md-6">
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="alert('Are you sure to reset user password?')"><i class="fa fa-unlock-alt fa-fw" aria-hidden="true"></i> {{trans('button.reset_password')}}</button>
-                                </div>
-                            </div>
-                            <div id="email-group" class="form-group mb5">
+                            <div id="email-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.email')}}</label>
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <input id="email" name="email" type="email" class="form-control" placeholder="{{trans('form.email')}}">
                                     <span class="help-block">
                                         <strong id="email-help" class="help-text"></strong>
                                     </span>
                                 </div>
                             </div>
-                            <div id="full-name-group" class="form-group mb5">
+                            <div id="full-name-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.full_name')}}</label>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input id="first_name" name="first_name" type="text" class="form-control" placeholder="{{trans('form.first_name')}}">
                                     <span class="help-block">
                                         <strong id="first-name-help" class="help-text"></strong>
                                     </span>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <input id="middle_name" name="middle_name" type="text" class="form-control" placeholder="{{trans('form.middle_name')}}">
+                                    <span class="help-block">
+                                        <strong id="middle-name-help" class="help-text"></strong>
+                                    </span>
+                                </div>
+                                <div class="col-md-3">
                                     <input id="last_name" name="last_name" type="text" class="form-control" placeholder="{{trans('form.last_name')}}">
                                     <span class="help-block">
                                         <strong id="last-name-help" class="help-text"></strong>
                                     </span>
                                 </div>
                             </div>
-                            <div id="device-code-group" class="form-group mb5">
+                            <div id="device-code-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.device_code')}}</label>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <input id="device_code" name="device_code" type="text" class="form-control" placeholder="{{trans('form.device_code')}}">
                                     <span class="help-block">
                                         <strong id="device-code-help" class="help-text"></strong>
                                     </span>
                                 </div>
                             </div>
-                            <div id="mobile-group" class="form-group mb5">
+                            <div id="mobile-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.mobile')}}</label>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <input id="mobile" name="mobile" type="numeric" class="form-control" placeholder="{{trans('form.mobile')}}">
                                     <span class="help-block">
                                         <strong id="mobile-help" class="help-text"></strong>
                                     </span>
                                 </div>
                             </div>
-                            <div id="status-group" class="form-group mb5">
+                            <div id="status-group" class="form-group input-sm mb5">
                                 <div class="col-md-offset-3 col-md-6">
-                                    <input type="checkbox" id="status" name="status" disabled> {{trans('form.active')}}
+                                    <input type="checkbox" id="status" name="status"> {{trans('form.active')}}
                                     <span class="help-block">
                                         <strong id="status-help" class="help-text"></strong>
                                     </span>
@@ -156,7 +157,8 @@
                             <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-3 col-md-6">
                                     <div class="btn-group-sm">
-                                        <button id="btn-edit" type="button" class="btn btn-warning" onclick="doRedirectEditUser('{{$id}}')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i> {{trans('button.edit')}}</button>
+                                        <button id="btn-submit" type="button" class="btn btn-success"><i class="fa fa-save fa-fw" aria-hidden="true"></i> {{trans('button.save')}}</button>
+                                        <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
                                         <button id="btn-activate" type="button" class="btn btn-success"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> {{trans('button.activate')}}</button>
                                         <button id="btn-deactivate" type="button" class="btn btn-danger"><i class="fa fa-square-o fa-fw" aria-hidden="true"></i> {{trans('button.deactivate')}}</button>
                                     </div>
@@ -250,33 +252,23 @@
                         $('#username').val(data.username);
                         $('#username').prop('disabled', true);
                         $('#email').val(data.email);
-                        $('#email').prop('disabled', true);
                         $('#first_name').val(data.first_name);
-                        $('#first_name').prop('disabled', true);
                         $('#last_name').val(data.last_name);
-                        $('#last_name').prop('disabled', true);
                         $('#device_code').val(data.device_code);
-                        $('#device_code').prop('disabled', true);
                         $('#mobile').val(data.mobile);
-                        $('#mobile').prop('disabled', true);
                         if(data.status == 1) {
                             $('#status').prop('checked', true);
-                            $('#btn-activate').hide();
                         } else {
                             $('#status').prop('checked', false);
-                            $('#btn-deactivate').hide();
                         }
+                        $('#btn-activate').hide();
+                        $('#btn-deactivate').hide();
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');
                     }
                 });
             }
-
-            function doRedirectEditUser(id) {
-                window.location.href = "{{url('/user/edit')}}/" + id;
-            }
-
         </script>
     </body>
 </html>
