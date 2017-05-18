@@ -18,12 +18,13 @@ class CreateUsersTable extends Migration
             $table->integer('level')->default(0);
             $table->string('email');
             $table->string('password');
-            $table->string('device', 36)->nullable();
+            $table->string('device_code', 36)->nullable();
             $table->string('first_name', 50);
             $table->string('middle_name', 50)->nullable();
             $table->string('last_name', 50);
-            $table->string('mobile');
-            $table->string('hash');
+            $table->string('mobile')->nullable();
+            $table->string('hash')->nullable();
+            $table->string('avatar')->nullable();
             $table->integer('status')->default(0);
             $table->rememberToken();
             $table->timestamps();

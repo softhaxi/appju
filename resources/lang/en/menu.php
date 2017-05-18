@@ -6,5 +6,4 @@ return [
     'user_profile' => 'User Profile',
     'street_lighting' => 'Street Lighting',
     'survey' => 'Survey',
-    'logout' => 'Log Out'
 ];

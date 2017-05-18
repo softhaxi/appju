@@ -64,11 +64,11 @@
                                         <label for="login" class="col-md-4 control-label">{{trans('form.username_or_email')}}</label>
                                         <div class="col-md-8">
                                             <input id="email" type="text" class="form-control" name="login" value="{{ old('login') }}" placeholder="{{trans('form.username_or_email')}}" required autofocus>
+                                            <span class="help-block">
                                             @if ($errors->has('login'))
-                                                <span class="help-block">
-                                                    <strong>{{ $errors->first('login') }}</strong>
-                                                </span>
+                                                <strong>{{ $errors->first('login') }}</strong>
                                             @endif
+                                            </span>
                                         </div>
                                     </div>
 
@@ -76,12 +76,11 @@
                                         <label for="password" class="col-md-4 control-label">{{trans('form.password')}}</label>
                                         <div class="col-md-8">
                                             <input id="password" type="password" class="form-control" name="password" placeholder="{{trans('form.password')}}" required>
-
+                                            <span class="help-block">
                                             @if ($errors->has('password'))
-                                                <span class="help-block">
-                                                    <strong>{{ $errors->first('password') }}</strong>
-                                                </span>
+                                                <strong>{{ $errors->first('password') }}</strong>
                                             @endif
+                                            </span>
                                         </div>
                                     </div>
 
@@ -108,7 +107,7 @@
                 </div>
             </div>
         </footer>
-        <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </body>
