@@ -2,5 +2,5 @@
 
 return [
     'name' => 'APPJU',
-    'full_name' => 'Aplikasi Penerangan Jalan Utama'
+    'full_name' => 'Street Lighting Application'
 ];
