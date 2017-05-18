@@ -68,11 +68,11 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_HOST', env('DB_HOST', 'localhost')),
+            'host' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_HOST', env('DB_HOST', '172.30.75.124')),
             'port' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_PORT', env('DB_PORT', '5432')),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'appjudb'),
+            'username' => env('DB_USERNAME', 'user8QT'),
+            'password' => env('DB_PASSWORD', '1desv1h1evWIMK4Y'),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
