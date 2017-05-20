@@ -68,7 +68,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_HOST', env('DB_HOST', 'http://postgresql-softhaxi.7e14.starter-us-west-2.openshiftapps.com')),
+            'host' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_HOST', env('DB_HOST', 'localhost')),
             'port' => env(strtoupper(env('DB_SERVICE_NAME', 'PGSQL')).'_SERVICE_PORT', env('DB_PORT', '5432')),
             'database' => env('DB_DATABASE', 'appjudb'),
             'username' => env('DB_USERNAME', 'user8QT'),
