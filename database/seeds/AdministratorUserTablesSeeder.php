@@ -20,7 +20,7 @@ class AdministratorUserTablesSeeder extends Seeder {
     public function run() {
         $user = new User();
         $user->level = 1;
-        $user->name = '4dm1nAPpJU';
+        $user->name = strtoupper('4dm1nAPpJU');
         $user->password = bcrypt('password123.');
         $user->email = 'apppju@gmail.com';
         $user->first_name = 'Administrator';

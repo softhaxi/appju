@@ -26,6 +26,8 @@ class CreateUsersTable extends Migration
             $table->string('hash')->nullable();
             $table->string('avatar')->nullable();
             $table->integer('status')->default(0);
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

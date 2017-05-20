@@ -51,28 +51,28 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{url('home')}}">{{trans('menu.home')}}</a></li>
                     <li class="active"><a href="{{url('user')}}">{{trans('menu.user')}}</a></li>
-                    <li><a href="{{url('streetlighting')}}">{{trans('menu.street_lighting')}}</a></li>
+                    <li><a href="{{url('streetlighting')}}">{{trans('menu.legal_street_lighting')}}</a></li>
                     <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            {{ Auth::user()->first_name }} {{ Auth::user()->last_name }} <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li class="clearfix">
-                                <a href="{{ url('/logout') }}"
-                                    onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">
-                                    <i class="fa fa-power-off fa-fw pull-right"></i> {{trans('menu.logout')}}
-                                </a>
-                                <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
-                                    {{ csrf_field() }}
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}  <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="clearfix">
+                                    <a href="{{ url('/signout') }}"
+                                        onclick="event.preventDefault();
+                                            document.getElementById('signout-form').submit();">
+                                        <i class="fa fa-power-off fa-fw pull-right"></i> {{trans('button.sign_out')}}
+                                    </a>
+                                    <form id="signout-form" action="{{ url('/signout') }}" method="POST" style="display: none;">
+                                        {{ csrf_field() }}
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

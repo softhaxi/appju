@@ -94,10 +94,17 @@ class AuthController extends Controller
         $login = $request->get('login');
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
+        if($field == 'name') {
+            $login = strtoupper(trim($login));
+        } else {
+            $login = strtolower(trim($login));
+        }
+
         return [
             $field => $login,
             'password' => $request->get('password'),
-            'level' => 1
+            'level' => 1,
+            'status' => 1,
         ];
     }
 }

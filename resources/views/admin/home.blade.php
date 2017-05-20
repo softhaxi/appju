@@ -57,7 +57,7 @@
                     <ul class="nav navbar-nav">
                         <li class="active"><a href="{{url('home')}}">{{trans('menu.home')}}</a></li>
                         <li><a href="{{url('user')}}">{{trans('menu.user')}}</a></li>
-                        <li><a href="{{url('streetlighting')}}">{{trans('menu.street_lighting')}}</a></li>
+                        <li><a href="{{url('streetlighting')}}">{{trans('menu.legal_street_lighting')}}</a></li>
                         <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
