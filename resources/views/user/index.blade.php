@@ -125,13 +125,13 @@
                         data-pagination-loop="false">
                         <thead> 
                             <tr>
-                                <th data-field="username" data-sortable="true" data-formatter="usernameFormatter">{{trans('form.username')}}</th>
+                                <th class="col-sm-2" data-field="username" data-sortable="true" data-formatter="usernameFormatter">{{trans('form.username')}}</th>
                                 <th data-field="full_name" data-sortable="true">{{trans('form.full_name')}}</th>
-                                <th data-field="email">{{trans('form.email')}}</th>
-                                <th data-field="mobile">{{trans('form.mobile')}}</th>
-                                <th data-field="device_code">{{trans('form.device_code')}}</th>
-                                <th data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
-                                <th data-formatter="actionFormatter"></th>
+                                <th class="col-sm-2" data-field="email">{{trans('form.email')}}</th>
+                                <th class="col-sm-1" data-field="mobile">{{trans('form.mobile')}}</th>
+                                <th class="col-sm-1" data-field="device_code">{{trans('form.device_code')}}</th>
+                                <th class="col-sm-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
+                                <th class="col-sm-1" data-formatter="actionFormatter"></th>
                             </tr> 
                         </thead> 
                         <tbody></tbody> 
@@ -230,14 +230,39 @@
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
                                 <span class="glyphicon glyphicon-info-sign">
+                                </span> Notification
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-notification" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-group-sm">
+                                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
                                 </span> Confirmation
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <p id="text-message" class="text-message"></p>
+                            <p id="text-confirmation" class="text-message"></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
+                            <div class="btn-group-sm">
+                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
+                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -282,17 +307,17 @@
             function showNotification(message, status, callback, params) {
                 $('#modal-notification').on('show.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-message').addClass('text-primary');
+                        $('#text-notification').addClass('text-primary');
                     } else {
-                        $('#text-message').addClass('text-danger');
+                        $('#text-notification').addClass('text-danger');
                     }
-                    $('#text-message').html(message);
+                    $('#text-notification').html(message);
                 });
                 $('#modal-notification').on('hidden.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-message').removeClass('text-primary');
+                        $('#text-notification').removeClass('text-primary');
                     } else {
-                        $('#text-message').removeClass('text-danger');
+                        $('#text-notification').removeClass('text-danger');
                     }
                     if(params != null) {
                         callback(params);
@@ -306,12 +331,12 @@
             }
 
             function doSearchForm() {
-                var data = {
-                    'username'              : $('input[name=username]').val(),
-                    'full_name'             : $('input[name=full_name]').val(),
-                    'email'                 : $('input[name=email]').val(),
-                    'device_code'           : $('input[name=device_code]').val()
-                };
+                var data = new FormData();
+                data.append('username', $('input[name=username]').val());
+                data.append('full_name', $('input[name=full_name]').val());
+                data.append('email', $('input[name=email]').val());
+                data.append('device_code', $('input[name=device_code]').val());
+
                 $('#modal-loading').modal('show');
                 $.ajax({
                     url: '{{url('/json/user/search')}}',
@@ -445,6 +470,61 @@
                 return '<div class="text-center"><a href="{{url('/user')}}/' +row.id+'">'+value+'</a></div>';
             }
 
+            function showUserDeleteConfirmation(id) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url('/json/user/')}}/' + id,
+                    async: false,
+                    beforeSend: function (xhr) {
+                        if (xhr && xhr.overrideMimeType) {
+                            xhr.overrideMimeType('application/json;charset=utf-8');
+                        }
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var message = '';
+                        var data = response.data;
+                        message = 'Are you sure for delete user <strong>' + data.username + "</strong> ?";
+                        $('#modal-confirmation').on('hidden.bs.modal', function(event) {
+                            $('#button-delete-ok').off("click");
+                        });
+                        $('#modal-confirmation').modal('show');
+                        $('#text-confirmation').html(message);
+                        $('#text-confirmation').addClass('text-danger');
+                        $('#btn-ok').on('click', function(event) {
+                            doDeleteUserForm(data.id);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
+
+            function doDeleteUserForm(id) {
+                var data = new FormData();
+                data.append('id', id);
+                $('#modal-loading').modal('show');
+                $.ajax({
+                    url: '{{url('/json/user/delete')}}',
+                    type: 'POST',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#modal-loading').modal('hide');
+                        $('#modal-confirmation').modal('hide');
+                        $('#btn-ok').off("click");
+                        showNotification(response.message, false, doSearchForm, null);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
+
             function statusFormatter(value, row, index) {
                 if(row.status == 1) {
                     return '<p class="text-primary text-center">{{trans('form.active')}}</p>';
@@ -458,7 +538,7 @@
                 buttons += ' <button class="btn btn-warning" onclick="doRedirectEditUser(' + 
                         "'" + row.id + "'" + ')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></button>';
                 buttons += ' <button class="btn btn-danger" onclick="showUserDeleteConfirmation(' + 
-                        "'" + row.id + "','" + row.username + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
                 buttons += '</div>';
                 return buttons;
             }

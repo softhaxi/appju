@@ -81,14 +81,9 @@
                 <h3>{{trans('menu.user_profile')}}</h3>
                 <form id="form-user" class="form-horizontal" role="form">    
                     <div class="row">
-                        <div class="col-md-2">
-                            <div class="text-center">
-                                <img src="http://placehold.it/100" class="avatar img-circle" alt="Avatar"/>
-                                <div class="clear-fix">&nbsp;</div>
-                                <input id="profile_image" name="profile_image" type="file" accept=".jpeg,.png">
-                            </div>
-                        </div>
-                        <div class="col-md-7">
+                        <div class="col-md-offset-2 col-md-7">
+                            <div id="error-panel" class="alert alert-danger alert-dismissable"></div>
+                            <input type="hidden" name="id" value="{{$id}}"/>
                             <div id="username-group" class="form-group input-sm mb5">
                                 <label class="col-md-3 control-label">{{trans('form.username')}}</label>
                                 <div class="col-md-5">
@@ -148,7 +143,8 @@
                             </div>
                             <div id="status-group" class="form-group input-sm mb5">
                                 <div class="col-md-offset-3 col-md-6">
-                                    <input type="checkbox" id="status" name="status"> {{trans('form.active')}}
+                                    <input type="checkbox" id="status-checkbox"> {{trans('form.active')}}
+                                    <input type="hidden" id="status" name="status"/>
                                     <span class="help-block">
                                         <strong id="status-help" class="help-text"></strong>
                                     </span>
@@ -157,10 +153,8 @@
                             <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-3 col-md-6">
                                     <div class="btn-group-sm">
-                                        <button id="btn-submit" type="button" class="btn btn-success"><i class="fa fa-save fa-fw" aria-hidden="true"></i> {{trans('button.save')}}</button>
-                                        <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
-                                        <button id="btn-activate" type="button" class="btn btn-success"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> {{trans('button.activate')}}</button>
-                                        <button id="btn-deactivate" type="button" class="btn btn-danger"><i class="fa fa-square-o fa-fw" aria-hidden="true"></i> {{trans('button.deactivate')}}</button>
+                                        <button id="btn-submit" type="submit" class="btn btn-success"><i class="fa fa-save fa-fw" aria-hidden="true"></i> {{trans('button.save')}}</button>
+                                        <button id="btn-cancel" type="button" class="btn btn-danger" onclick="doRedirectUserList();"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +226,104 @@
                     }
                 });
                 loadDetailUser();
+
+                $('#error-panel').html('');
+                $('#error-panel').hide();
+                $('#form-user').on('submit', function(event) {
+                    event.preventDefault();
+                    $('#modal-loading').modal('show');
+
+                    $('#error-panel').html('');
+                    $('#error-panel').hide();
+                    $.ajax({
+                        url: '{{url('/json/user/update')}}',
+                        type: 'POST',
+                        data: new FormData(this),
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            $('#modal-loading').modal('hide');
+                            showNotification(response.message, false, doRedirectDetailUser, response);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $('#modal-loading').modal('hide');
+                            var json = JSON.parse(xhr.responseText);
+                            var errors = '<ul>';
+                            if(json.errors['username']== null) {
+                                $('#username-group').removeClass('has-error');
+                            } else {
+                                $('#username-group').addClass('has-error');
+                                errors += '<li>' + json.errors['username'] + '</li>';
+                            }
+
+                            if(json.errors['email']== null) {
+                                $('#email-group').removeClass('has-error');
+                            } else {
+                                $('#email-group').addClass('has-error');
+                                errors += '<li>' + json.errors['email'] + '</li>';
+                            }
+
+                            if(json.errors['first_name']== null) {
+                                $('#full-name-group').removeClass('has-error');
+                            } else {
+                                $('#full-name-group').addClass('has-error');
+                                errors += '<li>' + json.errors['first_name'] + '</li>';
+                            }
+
+                            if(json.errors['last_name']== null) {
+                                $('#full-name-group').removeClass('has-error');
+                            } else {
+                                $('#full-name-group').addClass('has-error');
+                                errors += '<li>' + json.errors['last_name'] + '</li>';
+                            }
+
+                            if(json.errors['device_code']== null) {
+                                $('#device-code-group').removeClass('has-error');
+                            } else {
+                                $('#device-code-group').addClass('has-error');
+                                errors += '<li>' + json.errors['device_code'] + '</li>';
+                            }
+
+                            if(json.errors['mobile']== null) {
+                                $('#mobile-group').removeClass('has-error');
+                            } else {
+                                $('#mobile-group').addClass('has-error');
+                                errors += '<li>' + json.errors['mobile'] + '</li>';
+                            }
+
+                            errors += '</ul>';
+                            $('#error-panel').show();
+                            $('#error-panel').html(errors);
+                        }
+                    });
+                });
             });
+
+            function showNotification(message, status, callback, params) {
+                $('#modal-notification').on('show.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-message').addClass('text-primary');
+                    } else {
+                        $('#text-message').addClass('text-danger');
+                    }
+                    $('#text-message').html(message);
+                });
+                $('#modal-notification').on('hidden.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-message').removeClass('text-primary');
+                    } else {
+                        $('#text-message').removeClass('text-danger');
+                    }
+                    if(params != null) {
+                        callback(params);
+                    } else {
+                        callback();
+                    }
+                    $('#modal-notification').off('show.bs.modal');
+                    $('#modal-notification').off('hidden.bs.modal');
+                });
+                $('#modal-notification').modal('show');
+            }
 
             function loadDetailUser() {
                 $('#modal-loading').modal('show');
@@ -250,24 +341,34 @@
                         $('#modal-loading').modal('hide');
                         var data = response.data;
                         $('#username').val(data.username);
-                        $('#username').prop('disabled', true);
+                        $('#username').prop('readonly', true);
                         $('#email').val(data.email);
                         $('#first_name').val(data.first_name);
+                        $('#middle_name').val(data.middle_name);
                         $('#last_name').val(data.last_name);
                         $('#device_code').val(data.device_code);
                         $('#mobile').val(data.mobile);
                         if(data.status == 1) {
-                            $('#status').prop('checked', true);
+                            $('#status-checkbox').prop('checked', true);
                         } else {
-                            $('#status').prop('checked', false);
+                            $('#status-checkbox').prop('checked', false);
                         }
-                        $('#btn-activate').hide();
-                        $('#btn-deactivate').hide();
+                        $('#status').val(data.status);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');
                     }
                 });
+            }
+
+            function doRedirectDetailUser(params) {
+                if(params.code == 202) {
+                    window.location.href = "{{url('/user/')}}/" + params.data.id;
+                }
+            }
+
+            function doRedirectUserList() {
+                window.location.href = "{{url('/user/')}}";
             }
         </script>
     </body>
