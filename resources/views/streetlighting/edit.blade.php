@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{trans('heading.street_lighting_detail')}} · {{trans('app.name')}}</title>
+        <title>{{trans('heading.street_lighting_detail')}} · {{trans('button.edit')}} · {{trans('app.name')}}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css"> 
@@ -80,7 +80,8 @@
             <div class="container">
                 <h3>{{trans('heading.street_lighting_detail')}}</h3>
                 <div class="col-md-12">
-                <form id="form-search" class="form-horizontal">
+                <form id="form-street-lighting" class="form-horizontal">
+                    <div id="error-panel" class="alert alert-danger alert-dismissable"></div>
                     <input type="hidden" name="id" value="{{$id}}"/>
                     <div class="row">
                         <div class="col-md-6">
@@ -222,7 +223,8 @@
                             </div>
                             <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-4 col-md-6">
-                                    <input type="checkbox" id="status-checkbox" name="status-checkbox"> {{trans('form.active')}}
+                                    <input type="checkbox" id="status-checkbox" name="status-checkbox" onchange="doChangeStatus();"> {{trans('form.active')}}
+                                    <input type="hidden" id="status" name="status"/>
                                     <span class="help-block">
                                         <strong id="status-help" class="help-text"></strong>
                                     </span>
@@ -231,32 +233,10 @@
                         </div>
                     </div>
                     <div class="btn-group-sm pull-right">
-                        <button id="btn-edit" type="button" class="btn btn-warning" onclick="doRedirectEditStreetLighting('{{$id}}')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i> {{trans('button.edit')}}</button>
-                        <button id="btn-activate" type="button" class="btn btn-success" onclick="doChangeStatusStreetLightingForm('{{$id}}','activate')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> {{trans('button.activate')}}</button>
-                        <button id="btn-deactivate" type="button" class="btn btn-danger" onclick="doChangeStatusStreetLightingForm('{{$id}}','deactivate')"><i class="fa fa-square-o fa-fw" aria-hidden="true"></i> {{trans('button.deactivate')}}</button>
+                        <button id="btn-submit" type="submit" class="btn btn-success"><i class="fa fa-save fa-fw" aria-hidden="true"></i> {{trans('button.save')}}</button>
+                        <button id="btn-cancel" type="button" class="btn btn-danger" onclick="doRedirectStreetLightingList();"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
                     </div>
                 </form>
-                </div>
-
-                
-                <div class="col-md-12">
-                    <h4>{{trans('heading.street_lighting_location')}}</h4>
-                    <div class="table-responsive">
-                        <table id="table-detail" class="table table-striped table-hover"
-                            data-pagination="true"
-                            data-pagination-loop="false">
-                            <thead> 
-                                <tr>
-                                    <th class="col-md-2" data-formatter="coordinatFormatter">{{trans('form.coordinat')}}</th>
-                                    <th data-field='number-of_lamp'>{{trans('form.number_of_lamp')}}</th>
-                                    <th data="survey_date" data-formatter="dateTimeFormatter">{{trans('form.survey_date')}}</th>
-                                    <th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
-                                    <th class="col-md-1" data-formatter="actionFormatter"></th>
-                                </tr> 
-                            </thead> 
-                            <tbody></tbody> 
-                        </table>
-                    </div>
                 </div>
             </div>
 
@@ -289,11 +269,11 @@
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
                                 <span class="glyphicon glyphicon-info-sign">
-                                </span> Notification
+                                </span> Confirmation
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <p id="text-notification" class="text-message"></p>
+                            <p id="text-message" class="text-message"></p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
@@ -325,47 +305,84 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-            
-                initTables();
                 loadDetailUser();
+
+                $('#error-panel').html('');
+                $('#error-panel').hide();
+                $('#form-street-lighting').on('submit', function(event) {
+                    event.preventDefault();
+                    $('#modal-loading').modal('show');
+
+                    $('#error-panel').html('');
+                    $('#error-panel').hide();
+                    $.ajax({
+                        url: '{{url('/json/streetlighting/update')}}',
+                        type: 'POST',
+                        data: new FormData(this),
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            $('#modal-loading').modal('hide');
+                            $('#modal-street-lighting').modal('hide');
+                            showNotification(response.message, false, doRedirectDetailStreetLighting, response);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            $('#modal-loading').modal('hide');
+                            var json = JSON.parse(xhr.responseText);
+                            var errors = '<ul>';
+                            if(json.errors['code']== null) {
+                                $('#code-group').removeClass('has-error');
+                            } else {
+                                $('#code-group').addClass('has-error');
+                                errors += '<li>' + json.errors['code'] + '</li>';
+                            }
+
+                            if(json.errors['name']== null) {
+                                $('#name-group').removeClass('has-error');
+                            } else {
+                                $('#name-group').addClass('has-error');
+                                errors += '<li>' + json.errors['name'] + '</li>';
+                            }
+
+                            if(json.errors['addres']== null) {
+                                $('#addres-group').removeClass('has-error');
+                            } else {
+                                $('#addres-group').addClass('has-error');
+                                errors += '<li>' + json.errors['addres'] + '</li>';
+                            }
+
+                            errors += '</ul>';
+                            $('#error-panel').show();
+                            $('#error-panel').html(errors);
+                        }
+                    });
+                });
             });
 
             function showNotification(message, status, callback, params) {
                 $('#modal-notification').on('show.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-notification').addClass('text-primary');
+                        $('#text-message').addClass('text-primary');
                     } else {
-                        $('#text-notification').addClass('text-danger');
+                        $('#text-message').addClass('text-danger');
                     }
-                    $('#text-notification').html(message);
+                    $('#text-message').html(message);
                 });
                 $('#modal-notification').on('hidden.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-notification').removeClass('text-primary');
+                        $('#text-message').removeClass('text-primary');
                     } else {
-                        $('#text-notification').removeClass('text-danger');
+                        $('#text-message').removeClass('text-danger');
                     }
-                    if(callback != null) {
-                        if(params != null) {
-                            callback(params);
-                        } else {
-                            callback();
-                        }
+                    if(params != null) {
+                        callback(params);
+                    } else {
+                        callback();
                     }
                     $('#modal-notification').off('show.bs.modal');
                     $('#modal-notification').off('hidden.bs.modal');
                 });
                 $('#modal-notification').modal('show');
-            }
-
-            function initTables() {
-                $('#table-detail').bootstrapTable({
-                    locale: 'en_US',
-                    classes: 'table table-striped table-hover table-borderless',
-                    formatLoadingMessage: function () {
-                        return '<span class="glyphicon glyphicon glyphicon-repeat glyphicon-animate"></span>';
-                    }
-                }); 
             }
 
             function loadDetailUser() {
@@ -384,35 +401,20 @@
                         $('#modal-loading').modal('hide');
                         var data = response.data;
                         $('#code').val(data.code);
-                        $('#code').prop('disabled', true);
                         $('#name').val(data.name);
-                        $('#name').prop('disabled', true);
                         $('#address').val(data.address);
-                        $('#address').prop('disabled', true);
                         $('#address2').val(data.address2);
-                        $('#address2').prop('disabled', true);
                         $('#address3').val(data.address3);
-                        $('#address3').prop('disabled', true);
                         $('#rate').selectpicker('val', data.rate);
-                        $('#rate').prop('disabled', true);
                         $('#power').val(data.power);
-                        $('#power').prop('disabled', true);
                         $('#stand_start').val(data.stand_start);
-                        $('#stand_start').prop('disabled', true);
                         $('#stand_end').val(data.stand_end);
-                        $('#stand_end').prop('disabled', true);
                         $('#kwh').val(data.kwh);
-                        $('#kwh').prop('disabled', true);
                         $('#ptl').val(data.ptl);
-                        $('#ptl').prop('disabled', true);
                         $('#stamp').val(data.stamp);
-                        $('#stamp').prop('disabled', true);
                         $('#bank_fee').val(data.bank_fee);
-                        $('#bank_fee').prop('disabled', true);
                         $('#ppn').val(data.ppn);
-                        $('#ppn').prop('disabled', true);
                         $('#monthly_bill').val(data.monthly_bill);
-                        $('#monthly_bill').prop('disabled', true);
                         if(data.status == 1) {
                             $('#status-checkbox').prop('checked', true); 
                             $('#btn-activate').hide();
@@ -420,7 +422,7 @@
                             $('#status-checkbox').prop('checked', false);
                             $('#btn-deactivate').hide();
                         }
-                        $('#status-checkbox').prop('disabled', true);
+                        $('#status').val(data.status);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');
@@ -428,36 +430,21 @@
                 });
             }
 
-            function doRedirectDetailUser(params) {
+            function doChangeStatus() {
+                if($('#status-checkbox').prop('checked') == true) {
+                    $('#status').val(1);
+                } else if($('#status-checkbox').prop('checked') == false){
+                    $('#status').val(0);
+                }
+            }
+            function doRedirectDetailStreetLighting(params) {
                 if(params.code == 202) {
                     window.location.href = "{{url('/streetlighting/')}}/" + params.data.id;
                 }
             }
 
-            function doRedirectEditStreetLighting(id) {
-                window.location.href = "{{url('/streetlighting/edit')}}/" + id;
-            }
-
-            function doChangeStatusStreetLightingForm(id, action) {
-                var data = new FormData();
-                data.append('id', id);
-                data.append('action', action);
-                $.ajax({
-                    url: '{{url('/json/streetlighting/status')}}',
-                    type: 'POST',
-                    data: data,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {
-                        $('#modal-loading').modal('hide');
-                        showNotification(response.message, false, doRedirectDetailUser, response);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        $('#modal-loading').modal('hide');
-                        var json = JSON.parse(xhr.responseText);
-                        showNotification(json.errors, true, null, null);
-                    }
-                });
+            function doRedirectStreetLightingList() {
+                window.location.href = "{{url('/streetlighting/')}}";
             }
         </script>
     </body>

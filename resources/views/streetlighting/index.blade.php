@@ -110,13 +110,14 @@
                     <table id="table-master" class="table table-striped table-hover"
                         data-pagination="true"
                         data-pagination-loop="false">
-                        <thead> 
+                        <thead class="text-center"> 
                             <tr>
-                                <th data-field="code" data-sortable="true" data-formatter="codeFormatter">{{trans('form.customer_number')}}</th>
+                                <th class="col-sm-2" data-field="code" data-sortable="true" data-formatter="codeFormatter">{{trans('form.customer_number')}}</th>
                                 <th data-field="name" data-sortable="true">{{trans('form.name')}}</th>
-                                <th data-field="address">{{trans('form.address')}}</th>
-                                <th data-field="power">{{trans('form.power')}}</th>
-                                <th data-formatter="actionFormatter"></th>
+                                <th data-field="full_address">{{trans('form.address')}}</th>
+                                <th class="col-sm-1" data-field="power">{{trans('form.power')}}</th>
+                                <th class="col-sm-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
+                                <th class="col-sm-1" data-formatter="actionFormatter"></th>
                             </tr> 
                         </thead> 
                         <tbody></tbody> 
@@ -182,9 +183,9 @@
                                     <div id="rate-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.rate')}}</label>
                                         <div class="col-md-4">
-                                            <select id="add-class" name="rate" class="selectpicker form-control">
+                                            <select id="rate" name="rate" class="selectpicker form-control">
                                                 <option value="P1">P1</option>
-                                                <option value="P3">P2</option>
+                                                <option value="P2">P2</option>
                                                 <option value="P3">P3</option>
                                             </select>
                                             <span class="help-block">
@@ -355,14 +356,37 @@
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
                                 <span class="glyphicon glyphicon-info-sign">
+                                </span> Notification
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-notification" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
                                 </span> Confirmation
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <p id="text-message" class="text-message"></p>
+                            <p id="text-confirmation" class="text-message"></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
+                            <div class="btn-group-sm">
+                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
+                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -406,10 +430,10 @@
             }
 
             function doSearchForm() {
-                var data = {
-                    'code'              : $('input[name=code]').val(),
-                    'name'              : $('input[name=name]').val()
-                };
+                var data = new FormData();
+                data.append('code', $('input[name=code]').val());
+                data.append('name', $('input[name=name]').val());
+
                 $('#modal-loading').modal('show');
                 $.ajax({
                     url: '{{url('/json/streetlighting/search')}}',
@@ -545,27 +569,84 @@
             function showNotification(message, status, callback, params) {
                 $('#modal-notification').on('show.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-message').addClass('text-primary');
+                        $('#text-notification').addClass('text-primary');
                     } else {
-                        $('#text-message').addClass('text-danger');
+                        $('#text-notification').addClass('text-danger');
                     }
-                    $('#text-message').html(message);
+                    $('#text-notification').html(message);
                 });
                 $('#modal-notification').on('hidden.bs.modal', function(event) {
                     if(!status) {
-                        $('#text-message').removeClass('text-primary');
+                        $('#text-notification').removeClass('text-primary');
                     } else {
-                        $('#text-message').removeClass('text-danger');
+                        $('#text-notification').removeClass('text-danger');
                     }
-                    if(params != null) {
-                        callback(params);
-                    } else {
-                        callback();
+                    if(callback != null) {
+                        if(params != null) {
+                            callback(params);
+                        } else {
+                            callback();
+                        }
                     }
                     $('#modal-notification').off('show.bs.modal');
                     $('#modal-notification').off('hidden.bs.modal');
                 });
                 $('#modal-notification').modal('show');
+            }
+
+            function showStreetLightingDeleteConfirmation(id) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url('/json/streetlighting/')}}/' + id,
+                    async: false,
+                    beforeSend: function (xhr) {
+                        if (xhr && xhr.overrideMimeType) {
+                            xhr.overrideMimeType('application/json;charset=utf-8');
+                        }
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var message = '';
+                        var data = response.data;
+                        message = 'Are you sure for delete street lighting <strong>' + data.code + ' - ' + data.name + "</strong> ?";
+                        $('#modal-confirmation').on('hidden.bs.modal', function(event) {
+                            $('#button-delete-ok').off("click");
+                        });
+                        $('#modal-confirmation').modal('show');
+                        $('#text-confirmation').html(message);
+                        $('#text-confirmation').addClass('text-danger');
+                        $('#btn-ok').on('click', function(event) {
+                            doDeleteStreetLightingForm(data.id);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
+
+            function doDeleteStreetLightingForm(id) {
+                var data = new FormData();
+                data.append('id', id);
+                $('#modal-loading').modal('show');
+                $.ajax({
+                    url: '{{url('/json/streetlighting/delete')}}',
+                    type: 'POST',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#modal-loading').modal('hide');
+                        $('#modal-confirmation').modal('hide');
+                        $('#btn-ok').off("click");
+                        showNotification(response.message, false, doSearchForm, null);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
             }
 
             function doRedirectDetailStreetLighting(params) {
@@ -574,8 +655,20 @@
                 }
             }
 
+            function doRedirectEditStreetLighting(id) {
+                window.location.href = "{{url('/streetlighting/edit')}}/" + id;
+            }
+
             function codeFormatter(value, row, index) {
                 return '<div class="text-center"><a href="{{url('/streetlighting')}}/' +row.id+'">'+value+'</a></div>';
+            }
+
+            function statusFormatter(value, row, index) {
+                if(row.status == 1) {
+                    return '<p class="text-primary text-center">{{trans('form.active')}}</p>';
+                } else {
+                    return '<p class="text-danger text-center">{{trans('form.inactive')}}</p>';
+                }
             }
 
             function actionFormatter(value, row, index) {
@@ -583,7 +676,7 @@
                 buttons += ' <button class="btn btn-warning" onclick="doRedirectEditStreetLighting(' + 
                         "'" + row.id + "'" + ')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></button>';
                 buttons += ' <button class="btn btn-danger" onclick="showStreetLightingDeleteConfirmation(' + 
-                        "'" + row.id + "','" + row.code + "','" + row.name + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
                 buttons += '</div>';
                 return buttons;
             }

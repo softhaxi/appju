@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'action' => 'Action',
     'active' => 'Active',
     'add' => 'Add',
     'address' => 'Address',
@@ -30,6 +31,7 @@ return [
     'middle_name' => 'Middle Name',
     'mobile' => 'Mobile',
     'name' => 'Name',
+    'number_of_lamp' => 'Number Of Lamp',
     'password' => 'Password',
     'power' => 'Power',
     'ppn' => 'PPN',
@@ -41,6 +43,8 @@ return [
     'start' => 'Start',
     'status' => 'Status',
     'street_lighting' => 'Street Lighting',
+    'survey_class' => 'Survey Class',
+    'survey_date' => 'Survey Date',
     'to_date' => 'To Date',
     'username' => 'Username',
     'username_or_email' => 'Username or Email'
