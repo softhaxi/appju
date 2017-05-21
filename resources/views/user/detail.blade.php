@@ -97,12 +97,14 @@
                                     </span>
                                 </div>
                             </div>
+                            <!--
                             <div id="password-group" class="form-group mb5">
                                 <label class="col-md-3 control-label">{{trans('form.password')}}</label>
                                 <div class="col-md-6">
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="alert('Are you sure to reset user password?')"><i class="fa fa-unlock-alt fa-fw" aria-hidden="true"></i> {{trans('button.reset_password')}}</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="showResetPasswordForm('{{$id}}')"><i class="fa fa-unlock-alt fa-fw" aria-hidden="true"></i> {{trans('button.reset_password')}}</button>
                                 </div>
                             </div>
+                            -->
                             <div id="email-group" class="form-group mb5">
                                 <label class="col-md-3 control-label">{{trans('form.email')}}</label>
                                 <div class="col-md-6">
@@ -157,8 +159,8 @@
                                 <div class="col-md-offset-3 col-md-6">
                                     <div class="btn-group-sm">
                                         <button id="btn-edit" type="button" class="btn btn-warning" onclick="doRedirectEditUser('{{$id}}')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i> {{trans('button.edit')}}</button>
-                                        <button id="btn-activate" type="button" class="btn btn-success"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> {{trans('button.activate')}}</button>
-                                        <button id="btn-deactivate" type="button" class="btn btn-danger"><i class="fa fa-square-o fa-fw" aria-hidden="true"></i> {{trans('button.deactivate')}}</button>
+                                        <button id="btn-activate" type="button" class="btn btn-success" onclick="doChangeStatusUserForm('{{$id}}','activate')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i> {{trans('button.activate')}}</button>
+                                        <button id="btn-deactivate" type="button" class="btn btn-danger" onclick="doChangeStatusUserForm('{{$id}}','deactivate')"><i class="fa fa-square-o fa-fw" aria-hidden="true"></i> {{trans('button.deactivate')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -194,14 +196,36 @@
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
                                 <span class="glyphicon glyphicon-info-sign">
+                                </span> Notification
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-notification" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
                                 </span> Confirmation
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <p id="text-message" class="text-message"></p>
+                            <p id="text-confirmation" class="text-message"></p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
+                            <div class="btn-group-sm">
+                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
+                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -231,6 +255,34 @@
                 });
                 loadDetailUser();
             });
+
+            function showNotification(message, status, callback, params) {
+                $('#modal-notification').on('show.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-notification').addClass('text-primary');
+                    } else {
+                        $('#text-notification').addClass('text-danger');
+                    }
+                    $('#text-notification').html(message);
+                });
+                $('#modal-notification').on('hidden.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-notification').removeClass('text-primary');
+                    } else {
+                        $('#text-notification').removeClass('text-danger');
+                    }
+                    if(callback != null) {
+                        if(params != null) {
+                            callback(params);
+                        } else {
+                            callback();
+                        }
+                    }
+                    $('#modal-notification').off('show.bs.modal');
+                    $('#modal-notification').off('hidden.bs.modal');
+                });
+                $('#modal-notification').modal('show');
+            }
 
             function loadDetailUser() {
                 $('#modal-loading').modal('show');
@@ -277,6 +329,89 @@
                 window.location.href = "{{url('/user/edit')}}/" + id;
             }
 
+            function doChangeStatusUserForm(id, action) {
+                var data = new FormData();
+                data.append('id', id);
+                data.append('action', action);
+                $.ajax({
+                    url: '{{url('/json/user/status')}}',
+                    type: 'POST',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $('#modal-loading').modal('hide');
+                        $('#modal-user').modal('hide');
+                        showNotification(response.message, false, doRedirectDetailUser, response);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                        showNotification(json.errors, true, null, null);
+                    }
+                });
+            }
+            
+            function doRedirectDetailUser(params) {
+                if(params.code == 202) {
+                    window.location.href = "{{url('/user/')}}/" + params.data.id;
+                }
+            }
+
+            function showUserDeleteConfirmation(id) {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url('/json/user/')}}/' + id,
+                    async: false,
+                    beforeSend: function (xhr) {
+                        if (xhr && xhr.overrideMimeType) {
+                            xhr.overrideMimeType('application/json;charset=utf-8');
+                        }
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        var message = '';
+                        var data = response.data;
+                        message = 'Are you sure for reset password user <strong>' + data.username + "</strong> ?";
+                        $('#modal-confirmation').on('hidden.bs.modal', function(event) {
+                            $('#button-delete-ok').off("click");
+                        });
+                        $('#modal-confirmation').modal('show');
+                        $('#text-confirmation').html(message);
+                        $('#text-confirmation').addClass('text-danger');
+                        $('#btn-ok').on('click', function(event) {
+                            doResetPasswordUserForm(data.id);
+                        });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
+
+            function doResetPasswordUserForm(id) {
+                var data = new FormData();
+                data.append('id', id);
+                $('#modal-loading').modal('show');
+                $.ajax({
+                    url: '{{url('/json/user/reset')}}',
+                    type: 'POST',
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#modal-loading').modal('hide');
+                        $('#modal-confirmation').modal('hide');
+                        $('#btn-ok').off("click");
+                        showNotification(response.message, false, doSearchForm, null);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
         </script>
     </body>
 </html>
