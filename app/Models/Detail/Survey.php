@@ -1,25 +1,24 @@
 <?php
 
-namespace APPJU\Models\Master;
+namespace APPJU\Models\Detail;
 
 use APPJU\Models\Common\BaseModel as Model;
-use APPJU\Models\Detail\StreetLighting;
 
 /**
- * Definition of Costomer
+ * Definition of Survey
  * 
  * @author Raja Sihombing <if09051@gmail.com>
  * @version 1.0.0
  * @since 1.0
  */
-class Customer extends Model {
+class Survey extends Model {
     
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'customers';
+    protected $table = 'surveys';
     
     
     /**
@@ -28,9 +27,8 @@ class Customer extends Model {
      * @var array
      */
     protected $fillable = [
-        'id', 'code', 'name', 'address', 'address2', 'address3',
-        'rate', 'power', 'stand_start', 'stand_end', 'kwh', 'ptl', 'stamp', 
-        'bank_fee', 'ppn', 'monthly_bill', 'status', 'created_by', 'updated_by'
+        'id', 'class', 'level', 'parent_id', 'action', 'url',
+        'surveyable_id', 'surveyable_type',  'status', 'created_by', 'updated_by'
     ];
     
     
@@ -42,13 +40,13 @@ class Customer extends Model {
     protected $hidden = [
         'created_at', 'updated_at', 'deleted_at'
     ];
-    
+
     /**
-     * Get list of street lighting
+     * Polimorphic Survey
      *
-     * @var list of street lighting
+     * @return Morph
      */
-    public function streetLightings() {
-        return $this->hasMany(streetLighting::class, 'customer_id', 'id');
+    public function surveyable() {
+        return $this->morphTo();
     }
 }

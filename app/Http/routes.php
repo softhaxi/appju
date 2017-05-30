@@ -25,7 +25,7 @@ Route::group(['middleware' => 'auth'], function () {
         return view('admin.home');
     });
 
-    Route::group(['prefix' => 'user'], function() {
+    Route::group(['prefix' => '/user'], function() {
         Route::get('/', function () {
             return view('user.index');
         });
@@ -39,7 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
     
-    Route::group(['prefix' => 'streetlighting'], function() {
+    Route::group(['prefix' => '/streetlighting'], function() {
         Route::get('/', function () {
             return view('streetlighting.index');
         });
@@ -47,10 +47,20 @@ Route::group(['middleware' => 'auth'], function () {
             return view('streetlighting.detail')
                 ->with('id', $id);
         });
+        Route::get('/edit/{id}', function ($id) {
+            return view('streetlighting.edit')
+                ->with('id', $id);
+        });
     });
 
-    Route::get('/survey', function () {
-        return view('survey.index');
+    Route::group(['prefix' => 'survey'], function() {
+        Route::get('/', function () {
+            return view('survey.index');
+        });
+        Route::get('/streetlighting/{id}', function($id) {
+            return view('streetlighting.survey')
+                ->with('id', $id);
+        });
     });
 });
 
@@ -65,15 +75,26 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => '/json'], function() {
         Route::group(['prefix' => '/user'], function() {
             Route::post('/', 'Security\UserController@post');
+            Route::post('/delete', 'Security\UserController@delete');
             Route::post('/search', 'Security\UserController@search');
+            Route::post('/status', 'Security\UserController@status');
+            Route::post('/update', 'Security\UserController@put');
             Route::get('/{id}', 'Security\UserController@view');
         });
 
         Route::group(['prefix' => '/streetlighting'], function() {
             Route::post('/', 'Master\StreetLightingController@post');
+            Route::post('/delete', 'Master\StreetLightingController@delete');
             Route::post('/import', 'Master\StreetLightingController@import');
             Route::post('/search', 'Master\StreetLightingController@search');
+            Route::post('/status', 'Master\StreetLightingController@status');
+            Route::post('/update', 'Master\StreetLightingController@put');
             Route::get('/{id}', 'Master\StreetLightingController@view');
+        });
+
+        Route::group(['prefix' => '/survey'], function() {
+            Route::post('/search', 'Detail\SurveyController@search');
+            Route::get('/{id}', 'Detail\SurveyController@view');
         });
     });
 });
@@ -85,11 +106,13 @@ Route::group(['prefix' => '/api'], function() {
     });
 
     Route::group(['prefix' => '/streetlighting'], function() {
-        Route::get('/download', 'Master\StreetLightingController@download');
+        Route::get('/search', 'Master\StreetLightingController@search');
     });
 
     Route::group(['prefix' => '/survey'], function() {
-        Route::post('/', 'Detail\SurveyController@post');
-        Route::post('/upload', 'Detail\SurveyController@upload');
+        Route::group(['prefix' => '/streetlighting'], function() {
+            Route::post('/', 'Survey\StreetLightingSurveyController@post');
+            Route::post('/lamp', 'Survey\StreetLightingSurveyController@postLamp');    
+        });
     });
 });
