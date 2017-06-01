@@ -376,7 +376,7 @@ class UserController extends Controller {
                 if(array_key_exists('device_code',$params) && $user->device_code == $params['device_code']) {
                     return $user;
                 } else {
-                    return null;
+                    return $user;
                 }
             } else if($user->level == 1) {
                 return $user;

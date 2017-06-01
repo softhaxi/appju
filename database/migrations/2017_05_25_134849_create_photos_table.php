@@ -16,8 +16,8 @@ class CreatePhotosTable extends Migration
             $table->string('id', 36);
             $table->string('name');
             $table->string('path');
-            $table->int('height')->default(0);
-            $table->int('width')->default(0);
+            $table->integer('height')->default(0);
+            $table->integer('width')->default(0);
             $table->string('photoable_id', 36);
             $table->string('photoable_type');
             $table->integer('status')->default(0);

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Controller;
 use APPJU\Models\Detail\Survey;
+use APPJU\Models\Detail\StreetLighting;
+use APPJU\Models\Master\Customer;
 
 /**
  * Survey controller
@@ -27,13 +29,35 @@ class SurveyController extends Controller {
         $data = [];
 
         foreach ($surveys as $survey) {
-            $item = [
-                'id' => $survey->id,
-                'survey_class' => $survey->class,
-                'date_time' => $survey->created_at,
-                'status' => $survey->status,
-                'url' => $survey->url
-            ];
+            $dateTime = date_create($survey->created_at);
+            
+            $customer = $this->getCustomerByid($survey->surveyable->customer_id);
+            if(!is_null($customer)) {
+                $item = [
+                    'id' => $survey->id,
+                    'survey_class' => $survey->class,
+                    'action' => $survey->action,
+                    'customer_id' => $customer->id,
+                    'customer_code' => $customer->code,
+                    'customer_name' => $customer->name,
+                    'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
+                    'status' => $survey->status,
+                    'url' => $survey->url,
+                    'morph' => ($survey->survayable instanceof StreetLighting)
+                ];
+            } else {
+                $item = [
+                    'id' => $survey->id,
+                    'survey_class' => $survey->class,
+                    'action' => $survey->action,
+                    'customer_id' => null,
+                    'customer_code' => null,
+                    'customer_name' => null,
+                    'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
+                    'status' => $survey->status,
+                    'url' => $survey->url
+                ];
+            }
             $data[] = $item;
         }
         return response()->json([
@@ -48,13 +72,13 @@ class SurveyController extends Controller {
      * @param array $params
      * @return List of survey
      */
-    private function getParentSurveys(array $params) {
+    protected function getParentSurveys(array $params) {
         $surveys = Survey::whereNull('parent_id')
-            ->get();
-        if(array_key_exists('status', $params) && $params['status'] != '') {
-            $surveys = $surveys->where('status', $params['status']);
+                ->where('status', '!=', 1)
+                ->get();
+        if(array_key_exists('status', $params)) {
+            $surveys = $surveys->where('status', (int)$params['status']);
         }
-
         return $surveys->all();
     }
 
@@ -62,10 +86,17 @@ class SurveyController extends Controller {
      *
      * @return Survey
      */
-    private function getSurveyById($id) {
+    protected function getSurveyById($id) {
         $survey = Survey::where('id', $id)
             ->first();
 
         return $survey;
+    }
+    
+    protected function getCustomerByid($id) {
+        $customer = Customer::where('id', $id)
+                ->first();
+
+        return $customer;
     }
 }

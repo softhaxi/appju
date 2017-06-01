@@ -94,6 +94,7 @@
                                     <input type="text" class="form-control" id="customer_number" name="customer_number" placeholder="{{trans('form.customer_number')}}">                                
                                 </div>
                             </div>
+                            <!--
                             <div id="type-group" class="form-group mb5">
                                 <label class="col-md-4 control-label">{{trans('form.street_lighting')}}</label>
                                 <div class="col-md-6">
@@ -107,6 +108,7 @@
                                     </span>
                                 </div>
                             </div>
+                            -->
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="btn-group-sm pull-right">

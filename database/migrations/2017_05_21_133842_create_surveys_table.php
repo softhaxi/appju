@@ -27,7 +27,7 @@ class CreateSurveysTable extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->primary('id');
-            $table->foreign('parent_id')->reference('id')->on('surveys');
+            $table->foreign('parent_id')->references('id')->on('surveys');
         });
     }
 

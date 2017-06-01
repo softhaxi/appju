@@ -117,9 +117,10 @@
                         data-pagination-loop="false">
                         <thead> 
                             <tr>
-                                <th class="col-md-2" data-field="date_time" data-sortable="true" data-formatter="dateTimeFormatter">{{trans('form.date_time')}}</th>
-                                <th data-field="survey_class">{{trans('form.survey_class')}}</th>
+                                <th class="col-md-2" data-field="date_time" data-sortable="true">{{trans('form.date_time')}}</th>
+                                <th class="col-md-2" data-field="survey_class">{{trans('form.survey_class')}}</th>
                                 <th class="col-md-1" data-field="action">{{trans('form.action')}}</th>
+                                <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
                                 <th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
                                 <th class="col-md-1" data-formatter="actionFormatter"></th>
                             </tr> 
@@ -243,6 +244,38 @@
                         var json = JSON.parse(xhr.responseText);
                     }
                 });
+            }
+            
+            function customerFormatter(value, row, index) {
+                if(row.customer_code != null) {
+                    return row.customer_code + ' - ' + row.customer_name;
+                } else {
+                    return '';
+                }
+            }
+            
+            function statusFormatter(value, row, index) {
+                if(row.status == 0) {
+                    return '<p class="text-primary text-center">{{trans('form.new')}}</p>';
+                } else if(row.status == 2){
+                    return '<p class="text-danger text-center">{{trans('form.reject')}}</p>';
+                }
+            }
+            
+            function actionFormatter(value, row, index) {
+                var buttons = '<div class="btn-group-xs text-center">';
+                
+                if(row.status == 0) {
+                    buttons += ' <button class="btn btn-primary" onclick="doApproveSurvey(' + 
+                        "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
+                } else if(row.status == 2) {
+                    buttons += ' <button class="btn btn-warning" onclick="doSurveyReapproveConfirmation(' + 
+                        "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
+                    buttons += ' <button class="btn btn-danger" onclick="showSurveyDeleteConfirmation(' + 
+                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+                }
+                buttons += '</div>';
+                return buttons;
             }
         </script>
     </body>

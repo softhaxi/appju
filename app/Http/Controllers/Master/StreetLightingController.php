@@ -23,6 +23,15 @@ use Validator;
  * @since 1.0
  */
 class StreetLightingController extends Controller {
+    
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function index(Request $request) {
+        return $this->search($request);
+    }
 
     /**
      * TODO
@@ -407,7 +416,7 @@ class StreetLightingController extends Controller {
 
         $data = [];
         try {
-            $customer->code = array_key_exists('address2', $params) ? strtoupper($params['code']) : $customer->code;
+            $customer->code = array_key_exists('code', $params) ? strtoupper($params['code']) : $customer->code;
             $customer->name = array_key_exists('name', $params) ? ucfirst(trim($params['name'])) : $customer->name;
             $customer->address = array_key_exists('address', $params) ? strtoupper(trim($params['address'])) : $customer->address;
             $customer->address2 = array_key_exists('address2', $params) ? strtoupper(trim($params['address2'])) : $customer->address2;

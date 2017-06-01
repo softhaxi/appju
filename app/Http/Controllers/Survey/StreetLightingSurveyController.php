@@ -3,17 +3,13 @@
 namespace APPJU\Http\Controllers\Survey;
 
 use Auth;
-
 use Carbon\Carbon;
-
 use Illuminate\Http\Request;
-
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Detail\SurveyController as Controller;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
 use APPJU\Models\Detail\StreetLigntingLamp as Lamp;
-
 use Validator;
 
 /**
@@ -24,7 +20,7 @@ use Validator;
  * @since 1.0
  */
 class StreetLightingSurveyController extends Controller {
-    
+
     /**
      * 
      * @param Request $request
@@ -32,40 +28,48 @@ class StreetLightingSurveyController extends Controller {
      */
     public function post(Request $request) {
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
-            'number_of_lamp' => 'required|numeric|min:1',
-            'latitude' => 'required',
-            'longitude' => 'required',
+                    'mobile_survey_id' => 'required',
+                    'number_of_lamp' => 'required|numeric|min:1',
+                    'latitude' => 'required',
+                    'longitude' => 'required',
+                    'photo' => 'mimes:jpg,jpeg,JPEG,png,gif,bmp|max:2048'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
-                    'code' => 400,
-                    'type' => 'BAD_ARG',
-                    'reason' => 'Invalid or bad argument',
-                    'errors' => $validator->messages()], 400);
+                        'code' => 400,
+                        'type' => 'BAD_ARG',
+                        'reason' => 'Invalid or bad argument',
+                        'errors' => $validator->messages()], 400);
         }
+
         $params = $request->all();
         $params['survey_status'] = 0;
         $parmas['url'] = '/survey/streetlighting';
         $params['action'] = 'CREATE';
-        if(array_key_exists('user_id', $params)) {
+        if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
         $params['status'] = 0;
 
         $result = $this->saveStreetLighting($params);
-        if(array_key_exists('errors', $result)) {
+        if (array_key_exists('errors', $result)) {
             $errors[] = [
                 $i => $result['errors']
             ];
         }
         $streetlighting = $result['data'];
         $data = [
-            'survey_id' => $streetlighting->survey()->id
+            'survey_id' => $streetlighting['survey_id'],
+            'street_lighting_id' => $streetlighting['street_lighting_id'],
+            'mobile_survey_id' => $params['mobile_survey_id']
         ];
-        if(array_key_exists('mobile_survey_id', $params)) {
-            $data['mobile_survey_id'] = $params['mobile_survey_id'];
-        } 
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $destination = base_path() . '/public/upload/streetlighting/';
+            $rename = $streetlighting->id . '.' . $file->getClientOriginalExtension();
+            $file->move($destination, $rename);
+        }
+
         return response()->json([
                     'code' => 202,
                     'status' => 'ACCEPTED',
@@ -80,25 +84,27 @@ class StreetLightingSurveyController extends Controller {
      * @return type
      */
     public function postLamp(Request $request) {
-         $validator = Validator::make($request->all(), [
-            'survey_id' => 'required|exists:surveys,id'
+        $validator = Validator::make($request->all(), [
+                    'mobile_survey_id' => 'required',
+                    'survey_id' => 'required|exists:surveys,id',
+                    'photo' => 'mimes:jpg,jpeg,JPEG,png,gif,bmp|max:2048'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
-                    'code' => 400,
-                    'type' => 'BAD_ARG',
-                    'reason' => 'Invalid or bad argument',
-                    'errors' => $validator->messages()], 400);
+                        'code' => 400,
+                        'type' => 'BAD_ARG',
+                        'reason' => 'Invalid or bad argument',
+                        'errors' => $validator->messages()], 400);
         }
         $params = $request->all();
         $params['survey_status'] = 0;
-        if(array_key_exists('user_id', $params)) {
+        if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
         $params['status'] = 0;
 
         $result = $this->saveStreetLighting($params);
-        if(array_key_exists('errors', $result)) {
+        if (array_key_exists('errors', $result)) {
             $errors[] = [
                 $i => $result['errors']
             ];
@@ -108,9 +114,15 @@ class StreetLightingSurveyController extends Controller {
             'survey_id' => $lamp->survey()->id,
             'street_lighting_id' => $lamp->street_lighting_id
         ];
-        if(array_key_exists('mobile_survey_id', $params)) {
+        if (array_key_exists('mobile_survey_id', $params)) {
             $data['mobile_survey_id'] = $params['mobile_survey_id'];
-        } 
+        }
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $destination = base_path() . '/public/upload/streetlighting/lamp';
+            $rename = $lamp->id . '.' . $file->getClientOriginalExtension();
+            $file->move($destination, $rename);
+        }
         return response()->json([
                     'code' => 202,
                     'status' => 'ACCEPTED',
@@ -119,9 +131,13 @@ class StreetLightingSurveyController extends Controller {
                     'data' => $data], 202);
     }
 
-
+    /**
+     * 
+     * @param array $params
+     * @return type
+     */
     private function saveStreetLighting(array $params) {
-        if(array_key_exists('id', $params)) {
+        if (array_key_exists('id', $params)) {
             $survey = $this->getSurveyById($params['id']);
             $streetlighting = $survey->surveyable();
         } else {
@@ -146,19 +162,32 @@ class StreetLightingSurveyController extends Controller {
             $streetlighting->geolocation = array_key_exists('geolocation', $params) ? trim($params['geolocation']) : $streetlighting->geolocation;
             $streetlighting->status = array_key_exists('status', $params) ? $params['status'] : $streetlighting->status;
             $streetlighting->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $streetlighting->created_by;
-            
+
             $streetlighting->save();
             $streetlighting->survey()->save($survey);
 
-            $data['data'] = $streetlighting;
+            $data['data'] = [
+                'survey_id' => $survey->id,
+                'street_lighting_id' => $streetlighting->id,
+                'customer_id' => $streetlighting->customer_id,
+                'number_of_lamp' => $streetlighting->number_of_lamp,
+                'latitude' => $streetlighting->latitude,
+                'longitude' => $streetlighting->longitude,
+                'status' => $streetlighting->status
+            ];
         } catch (Exception $ex) {
             $data['errors'] = $ex->getMessage();
         }
         return $data;
     }
 
+    /**
+     * 
+     * @param array $params
+     * @return type
+     */
     private function saveLightingLamp(array $params) {
-        if(array_key_exists('id', $params)) {
+        if (array_key_exists('id', $params)) {
             $survey = $this->getSurveyById($params['id']);
             $lamp = $survey->surveyable();
         } else {
@@ -186,7 +215,7 @@ class StreetLightingSurveyController extends Controller {
             $lamp->remark = array_key_exists('remark', $params) ? ucfirst(trim($params['remark'])) : $lamp->remark;
             $lamp->status = array_key_exists('status', $params) ? $params['status'] : $lamp->status;
             $lamp->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $lamp->created_by;
-            
+
             $lamp->save();
             $lamp->survey()->save($survey);
 
@@ -196,4 +225,5 @@ class StreetLightingSurveyController extends Controller {
         }
         return $data;
     }
+
 }

@@ -106,7 +106,7 @@ Route::group(['prefix' => '/api'], function() {
     });
 
     Route::group(['prefix' => '/streetlighting'], function() {
-        Route::get('/search', 'Master\StreetLightingController@search');
+        Route::get('/', 'Master\StreetLightingController@index');
     });
 
     Route::group(['prefix' => '/survey'], function() {
