@@ -9,7 +9,7 @@ use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Detail\SurveyController as Controller;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
-use APPJU\Models\Detail\StreetLigntingLamp as Lamp;
+use APPJU\Models\Detail\StreetLightingLamp as Lamp;
 use Validator;
 
 /**
@@ -44,7 +44,8 @@ class StreetLightingSurveyController extends Controller {
 
         $params = $request->all();
         $params['survey_status'] = 0;
-        $parmas['url'] = '/survey/streetlighting';
+        $params['level'] = 1;
+        $params['url'] = '/survey/streetlighting';
         $params['action'] = 'CREATE';
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
@@ -86,7 +87,8 @@ class StreetLightingSurveyController extends Controller {
     public function postLamp(Request $request) {
         $validator = Validator::make($request->all(), [
                     'mobile_survey_id' => 'required',
-                    'survey_id' => 'required|exists:surveys,id',
+                    'parent_survey_id' => 'required|exists:surveys,id',
+                    'street_lighting_id' => 'required|exists:street_lightings,id',
                     'photo' => 'mimes:jpg,jpeg,JPEG,png,gif,bmp|max:2048'
         ]);
         if ($validator->fails()) {
@@ -96,14 +98,22 @@ class StreetLightingSurveyController extends Controller {
                         'reason' => 'Invalid or bad argument',
                         'errors' => $validator->messages()], 400);
         }
+        
+        $survey = Survey::with('surveyable')
+                ->where('id', $request->input('parent_survey_id'))
+                ->first();
+        
         $params = $request->all();
         $params['survey_status'] = 0;
+        $params['action'] = 'CREATE';
+        $params['url'] = '/survey/streetlighting/lamp';
+        $params['level'] = 2;
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
         $params['status'] = 0;
 
-        $result = $this->saveStreetLighting($params);
+        $result = $this->saveStreetLightingLamp($params);
         if (array_key_exists('errors', $result)) {
             $errors[] = [
                 $i => $result['errors']
@@ -150,12 +160,17 @@ class StreetLightingSurveyController extends Controller {
             $survey->class = array_key_exists('class', $params) ? trim($params['class']) : $survey->class;
             $survey->level = array_key_exists('level', $params) ? trim($params['level']) : $survey->level;
             $survey->action = array_key_exists('action', $params) ? trim($params['action']) : $survey->action;
+            $survey->parent_id = array_key_exists('parent_id', $params) ? trim($params['parent_id']) : $survey->parent_id;
             $survey->url = array_key_exists('url', $params) ? trim($params['url']) : $survey->url;
             $survey->status = array_key_exists('survey_status', $params) ? $params['survey_status'] : $survey->status;
             $survey->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $survey->created_by;
 
 
             $streetlighting->customer_id = array_key_exists('customer_id', $params) ? trim($params['customer_id']) : $streetlighting->customer_id;
+            $streetlighting->name = array_key_exists('name', $params) ? trim($params['name']) : $streetlighting->name;
+            $streetlighting->address = array_key_exists('address', $params) ? trim($params['address']) : $streetlighting->address;
+            $streetlighting->power = array_key_exists('power', $params) ? trim($params['power']) : $streetlighting->power;
+            $streetlighting->rate = array_key_exists('power', $params) ? trim($params['rate']) : $streetlighting->rate;
             $streetlighting->number_of_lamp = array_key_exists('number_of_lamp', $params) ? $params['number_of_lamp'] : $streetlighting->number_of_lamp;
             $streetlighting->latitude = array_key_exists('latitude', $params) ? $params['latitude'] : $streetlighting->latitude;
             $streetlighting->longitude = array_key_exists('longitude', $params) ? $params['longitude'] : $streetlighting->longitude;
@@ -186,7 +201,7 @@ class StreetLightingSurveyController extends Controller {
      * @param array $params
      * @return type
      */
-    private function saveLightingLamp(array $params) {
+    private function saveStreetLightingLamp(array $params) {
         if (array_key_exists('id', $params)) {
             $survey = $this->getSurveyById($params['id']);
             $lamp = $survey->surveyable();
@@ -201,6 +216,7 @@ class StreetLightingSurveyController extends Controller {
             $survey->level = array_key_exists('level', $params) ? trim($params['level']) : $survey->level;
             $survey->action = array_key_exists('action', $params) ? trim($params['action']) : $survey->action;
             $survey->url = array_key_exists('url', $params) ? trim($params['url']) : $survey->url;
+            $survey->parent_id = array_key_exists('parent_id', $params) ? trim($params['parent_id']) : $survey->parent_id;
             $survey->status = array_key_exists('survey_status', $params) ? $params['survey_status'] : $survey->status;
             $survey->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $survey->created_by;
 
@@ -219,7 +235,12 @@ class StreetLightingSurveyController extends Controller {
             $lamp->save();
             $lamp->survey()->save($survey);
 
-            $data['data'] = $lamp;
+            $data['data'] = [
+                'survey_id' => $survey->id,
+                'street_lighting_id' => $streetlighting->id,
+                'customer_id' => $streetlighting->customer_id,
+                'status' => $streetlighting->status
+            ];
         } catch (Exception $ex) {
             $data['errors'] = $ex->getMessage();
         }

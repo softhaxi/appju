@@ -44,6 +44,14 @@ class Customer extends Model {
     ];
     
     /**
+     * 
+     */
+    public function __construct() {
+        parent::__construct();
+        $this->pju = 0;
+    }
+    
+    /**
      * Get list of street lighting
      *
      * @var list of street lighting

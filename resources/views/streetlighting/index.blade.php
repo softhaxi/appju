@@ -196,7 +196,7 @@
                                     <div id="power-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.power')}}</label>
                                         <div class="col-md-4">
-                                            <input id="power" name="power" type="number" class="form-control" placeholder="{{trans('form.power')}}">
+                                            <input id="power" name="power" type="number" class="form-control" placeholder="{{trans('form.power')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="power-help" class="help-text"></strong>
                                             </span>
@@ -207,13 +207,13 @@
                                     <div id="stand-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.stand')}}</label>
                                         <div class="col-md-4">
-                                            <input id="stand_start" name="stand_start" type="number" class="form-control" placeholder="{{trans('form.start')}}">
+                                            <input id="stand_start" name="stand_start" type="number" class="form-control" placeholder="{{trans('form.start')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="stand-start-help" class="help-text"></strong>
                                             </span>
                                         </div>
                                         <div class="col-md-4">
-                                            <input id="stand_end" name="stand_end" type="number" class="form-control" placeholder="{{trans('form.end')}}">
+                                            <input id="stand_end" name="stand_end" type="number" class="form-control" placeholder="{{trans('form.end')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="stand-end-help" class="help-text"></strong>
                                             </span>
@@ -222,7 +222,7 @@
                                     <div id="kwh-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.kwh')}}</label>
                                         <div class="col-md-4">
-                                            <input id="kwh" name="kwh" type="number" class="form-control" placeholder="{{trans('form.kwh')}}">
+                                            <input id="kwh" name="kwh" type="number" class="form-control" placeholder="{{trans('form.kwh')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="kwh-help" class="help-text"></strong>
                                             </span>
@@ -231,7 +231,7 @@
                                     <div id="ptl-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.ptl')}}</label>
                                         <div class="col-md-4">
-                                            <input id="ptl" name="ptl" type="number" class="form-control" placeholder="{{trans('form.ptl')}}">
+                                            <input id="ptl" name="ptl" type="number" class="form-control" placeholder="{{trans('form.ptl')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="ptl-help" class="help-text"></strong>
                                             </span>
@@ -240,7 +240,7 @@
                                     <div id="stamp-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.stamp')}}</label>
                                         <div class="col-md-4">
-                                            <input id="stamp" name="stamp" type="number" class="form-control" placeholder="{{trans('form.stamp')}}">
+                                            <input id="stamp" name="stamp" type="number" class="form-control" placeholder="{{trans('form.stamp')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="stamp-help" class="help-text"></strong>
                                             </span>
@@ -249,7 +249,7 @@
                                     <div id="bank-fee-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.bank_fee')}}</label>
                                         <div class="col-md-4">
-                                            <input id="bank_fee" name="bank_fee" type="number" class="form-control" placeholder="{{trans('form.bank_fee')}}">
+                                            <input id="bank_fee" name="bank_fee" type="number" class="form-control" placeholder="{{trans('form.bank_fee')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="bank-fee-help" class="help-text"></strong>
                                             </span>
@@ -258,7 +258,7 @@
                                     <div id="ppn-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.ppn')}}</label>
                                         <div class="col-md-4">
-                                            <input id="ppn" name="ppn" type="number" class="form-control" placeholder="{{trans('form.ppn')}}">
+                                            <input id="ppn" name="ppn" type="number" class="form-control" placeholder="{{trans('form.ppn')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="ppn-help" class="help-text"></strong>
                                             </span>
@@ -267,7 +267,7 @@
                                     <div id="monthly-bill-group" class="form-group mb5">
                                         <label class="col-md-4 control-label">{{trans('form.bill')}}</label>
                                         <div class="col-md-4">
-                                            <input id="monthly_bill" name="monthly_bill" type="number" class="form-control" placeholder="{{trans('form.bill')}}">
+                                            <input id="monthly_bill" name="monthly_bill" type="number" class="form-control" placeholder="{{trans('form.bill')}}" min="0" value="0">
                                             <span class="help-block">
                                                 <strong id="monthly-bill-help" class="help-text"></strong>
                                             </span>

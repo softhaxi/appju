@@ -30,8 +30,9 @@ class StreetLighting extends Model {
      * @var array
      */
     protected $fillable = [
-        'id', 'customer_id', 'number_of_lamp', 'latitude', 
-        'longitude', 'geolocation', 'status', 'created_by', 'updated_by'
+        'id', 'customer_id', 'name', 'address', 'power', 'rate', 
+        'number_of_lamp', 'latitude', 'longitude', 'geolocation', 
+        'status', 'created_by', 'updated_by'
     ];
     
     

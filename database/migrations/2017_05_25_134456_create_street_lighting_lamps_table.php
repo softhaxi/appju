@@ -18,8 +18,8 @@ class CreateStreetLightingLampsTable extends Migration
             $table->string('code', 50)->nullable();
             $table->string('type', 50)->nullable();
             $table->bigInteger('power')->default(0);
-            $table->float('latitude')->default(0);
-            $table->float('longitude')->default(0);
+            $table->float('latitude')->nullable();
+            $table->float('longitude')->nullable();
             $table->string('geolocation')->nullable();
             $table->string('remark')->nullable();
             $table->integer('status')->default(0);
