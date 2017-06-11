@@ -118,9 +118,9 @@
                         <thead> 
                             <tr>
                                 <th class="col-md-2" data-field="date_time" data-sortable="true">{{trans('form.date_time')}}</th>
-                                <th class="col-md-2" data-field="survey_class">{{trans('form.survey_class')}}</th>
                                 <th class="col-md-1" data-field="action">{{trans('form.action')}}</th>
                                 <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
+                                <th class="col-md-1" data-field="creator">{{trans('form.created_by')}}</th>
                                 <th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
                                 <th class="col-md-1" data-formatter="actionFormatter"></th>
                             </tr> 
@@ -250,7 +250,7 @@
                 if(row.customer_code != null) {
                     return row.customer_code + ' - ' + row.customer_name;
                 } else {
-                    return '';
+                    return row.customer_name;
                 }
             }
             

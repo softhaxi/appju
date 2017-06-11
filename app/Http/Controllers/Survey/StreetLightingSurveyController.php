@@ -105,9 +105,10 @@ class StreetLightingSurveyController extends Controller {
         
         $params = $request->all();
         $params['survey_status'] = 0;
+        $params['parent_id'] = $params['parent_survey_id'];
         $params['action'] = 'CREATE';
         $params['url'] = '/survey/streetlighting/lamp';
-        $params['level'] = 2;
+        $params['level'] = 1;
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
@@ -121,12 +122,11 @@ class StreetLightingSurveyController extends Controller {
         }
         $lamp = $result['data'];
         $data = [
-            'survey_id' => $lamp->survey()->id,
-            'street_lighting_id' => $lamp->street_lighting_id
+            'survey_id' => $lamp['survey_id'],
+            'street_lighting_id' => $lamp['street_lighting_id'],
+            'street_lighting_lamp_id' => $lamp['street_lighting_lamp_id'],
+            'mobile_survey_id' => $params['mobile_survey_id']
         ];
-        if (array_key_exists('mobile_survey_id', $params)) {
-            $data['mobile_survey_id'] = $params['mobile_survey_id'];
-        }
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $destination = base_path() . '/public/upload/streetlighting/lamp';
@@ -237,9 +237,9 @@ class StreetLightingSurveyController extends Controller {
 
             $data['data'] = [
                 'survey_id' => $survey->id,
-                'street_lighting_id' => $streetlighting->id,
-                'customer_id' => $streetlighting->customer_id,
-                'status' => $streetlighting->status
+                'street_lighting_id' => $lamp->street_lighting_id,
+                'street_lighting_lamp_id' => $lamp->id,
+                'status' => $lamp->status
             ];
         } catch (Exception $ex) {
             $data['errors'] = $ex->getMessage();

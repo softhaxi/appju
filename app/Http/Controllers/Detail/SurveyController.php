@@ -43,16 +43,17 @@ class SurveyController extends Controller {
                     'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
                     'status' => $survey->status,
                     'url' => $survey->url,
-                    'morph' => ($survey->survayable instanceof StreetLighting)
+                    'morph' => ($survey->surveyable_type == StreetLighting::class)
                 ];
             } else {
+                
                 $item = [
                     'id' => $survey->id,
                     'survey_class' => $survey->class,
                     'action' => $survey->action,
                     'customer_id' => null,
                     'customer_code' => null,
-                    'customer_name' => null,
+                    'customer_name' => $survey->surveyable->name,
                     'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
                     'status' => $survey->status,
                     'url' => $survey->url

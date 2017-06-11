@@ -9,6 +9,7 @@ return [
     'bank_fee' => 'Bank Fee',
     'bill' => 'Bill',
     'coordinat' => 'Coordinat',
+    'created_by' => 'Created By',
     'create_new_user' => 'Create New User',
     'create_street_lighting' => 'Create New Street Lighting',
     'customer' => 'Customer',
