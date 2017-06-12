@@ -212,7 +212,7 @@ class StreetLightingSurveyController extends Controller {
                     $path = '/upload/streetlighting/' . $streetlighting->id . '.png';
                     $destination = base_path() . '/public' . $path;
                     file_put_contents($destination, base64_decode($encodedPhoto));
-                    $photo->path = $destination;
+                    $photo->path = $path;
                 }
             }
             $streetlighting->photo()->save($photo);
