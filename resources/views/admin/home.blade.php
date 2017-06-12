@@ -12,27 +12,44 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
         <style>
-            html { 
+            html, body, .map { 
                 height: 100%
             }
-
             body {
-                height: 100%;
                 width: 100%;
                 margin: 0;
-                padding: 55px 0px 0px 0px;
+                padding: 0;
+            }
+            .navbar-container {
+                padding: 0px 10px 0px 0px;
             }
             .main-container {
-                margin-bottom: 50px;
+                height: 100%;
+                left: 0px;
+                right: 0px;
             }
-
-            .map {
-                height: 450px;
+            .map-content {
+                top: 50px;
+                bottom: 30px;
+                overflow: auto;
+                position: absolute;
+                left: 0px;
+                right: 0px;
             }
-
+            .search-container {
+                width: 400px;
+                position: absolute;
+                top: 70px;
+                left: 10px;
+                padding: 16px 16px 0px 16px;
+                background-color: #ffffff;
+                box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.46);
+            }
             footer {
-                position: fixed;
                 bottom: 0;
+                left: 0;
+                right: 0;
+                position: fixed;
                 width: 100%;
                 z-index: 999;
                 padding: 5px 0;
@@ -43,7 +60,7 @@
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
+            <div class="navbar-container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
@@ -83,9 +100,41 @@
             </div>
         </nav>
         <div class="main-container">
+            <div class="map-content">
+                <div id="map" class="map"></div>
+            </div>
+            <div class="search-container">
+                <form id="form-search-data" class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control" id="customer_number" name="customer_number" placeholder="{{trans('form.customer_number')}}">                                
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <div class="btn-group-sm pull-right">
+                                <button type="button" class="btn btn-default"><i class="fa fa-search fa-fw" aria-hidden="true"></i> {{trans('button.search')}}</button>
+                                <button type="button" class="btn btn-danger" onclick="doPrintMap();"><i class="fa fa-print fa-fw" aria-hidden="true"></i> {{trans('button.print_map')}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--
+        <div class="main-container">
+            <div class="map-content">
+            <div id="map" class="map"></div>
+            </div>
+        -->
+            <!--
             <div class="container">
                 <h3>{{trans('heading.survey_result_on_map')}}</h3>
                 <div class="row">
+                    
+                    
+                    
+                    
                     <div class="col-lg-4 col-md-4">
                         <form id="form-search-data" class="form-horizontal" role="form">
                             <div class="form-group">
@@ -94,7 +143,6 @@
                                     <input type="text" class="form-control" id="customer_number" name="customer_number" placeholder="{{trans('form.customer_number')}}">                                
                                 </div>
                             </div>
-                            <!--
                             <div id="type-group" class="form-group mb5">
                                 <label class="col-md-4 control-label">{{trans('form.street_lighting')}}</label>
                                 <div class="col-md-6">
@@ -108,7 +156,6 @@
                                     </span>
                                 </div>
                             </div>
-                            -->
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="btn-group-sm pull-right">
@@ -120,11 +167,13 @@
                         </form>
                     </div>
                     <div class="col-md-8">
-                        <div id="map" class="map"></div>
+                        
                     </div>
                 </div>
             </div>
-        </div>
+            -->
+        <!--</div>-->
+       
         <footer class="text-center">
             <div class="container">
                 <div class="row">
@@ -141,7 +190,9 @@
             function showMap() {
                 map = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: -34.397, lng: 150.644},
-                    zoom: 6
+                    zoom: 15,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    disableDefaultUI: true
                 });
                 infoWindow = new google.maps.InfoWindow;
 

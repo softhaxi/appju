@@ -14,12 +14,14 @@
             html { 
                 height: 100%
             }
-
             body {
                 height: 100%;
                 width: 100%;
                 margin: 0px 0px 50px 0px;
                 padding: 55px 0px 50px 0px;
+            }
+            .navbar-container {
+                padding: 0px 10px 0px 0px;
             }
             .main-container {
                 margin-bottom: 50px;
@@ -37,7 +39,7 @@
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
+            <div class="navbar-container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>

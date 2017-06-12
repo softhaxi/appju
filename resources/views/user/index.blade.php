@@ -11,26 +11,40 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css"> 
         <style>
-            html { 
+            html, body, .map { 
                 height: 100%
             }
-
             body {
-                height: 100%;
                 width: 100%;
                 margin: 0;
                 padding: 55px 0px 0px 0px;
             }
-            .main-container {
-                margin-bottom: 50px;
+            .navbar-container {
+                padding: 0px 10px 0px 0px;
             }
-
+            .main-container {
+                height: 100%;
+                left: 0px;
+                right: 0px;
+                top: 50px;
+                bottom: 30px;
+            }
+            .content-container {
+                top: 50px;
+                bottom: 30px;
+                overflow: auto;
+                position: absolute;
+                left: 0px;
+                right: 0px;
+            }
             footer {
-                position: fixed;
                 bottom: 0;
+                left: 0;
+                right: 0;
+                position: fixed;
                 width: 100%;
                 z-index: 999;
-                padding: 10px 0;
+                padding: 5px 0;
                 box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
                 background-color: #ffffff;
             }
@@ -38,7 +52,7 @@
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
+            <div class="navbar-container">
                 <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
