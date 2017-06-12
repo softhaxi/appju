@@ -41,7 +41,7 @@ class Photo extends Model {
     ];
 
     /**
-     * Polimorphic Survey
+     * Polymorphic Survey
      *
      * @return Morph
      */

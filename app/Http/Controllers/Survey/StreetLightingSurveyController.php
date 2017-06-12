@@ -10,6 +10,7 @@ use APPJU\Http\Controllers\Detail\SurveyController as Controller;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
 use APPJU\Models\Detail\StreetLightingLamp as Lamp;
+use APPJU\Models\Detail\Photo;
 use Validator;
 
 /**
@@ -62,13 +63,27 @@ class StreetLightingSurveyController extends Controller {
         $data = [
             'survey_id' => $streetlighting['survey_id'],
             'street_lighting_id' => $streetlighting['street_lighting_id'],
-            'mobile_survey_id' => $params['mobile_survey_id']
+            'mobile_survey_id' => $params['mobile_survey_id'],
+            'has_file' => $request->hasFile('photo')
         ];
+        
+        /**
+        if($request->has('encoded_photo')) {
+            $encodedPhoto = $request->input('encoded_photo');
+            if(!empty($encodedPhoto)) {
+                $destination = base_path() . '/public/upload/streetlighting/' . $streetlighting['street_lighting_id'] . '.png';
+                file_put_contents($destination, base64_decode($encodedPhoto));
+            }
+            $data = array_add($data, 'file_name', $destination);
+        }
+        */
+        
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $destination = base_path() . '/public/upload/streetlighting/';
-            $rename = $streetlighting->id . '.' . $file->getClientOriginalExtension();
+            $rename = $streetlighting['street_lighting_id'] . '.' . $file->getClientOriginalExtension();
             $file->move($destination, $rename);
+            $data = array_add($data, $rename, $destination);
         }
 
         return response()->json([
@@ -177,9 +192,30 @@ class StreetLightingSurveyController extends Controller {
             $streetlighting->geolocation = array_key_exists('geolocation', $params) ? trim($params['geolocation']) : $streetlighting->geolocation;
             $streetlighting->status = array_key_exists('status', $params) ? $params['status'] : $streetlighting->status;
             $streetlighting->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $streetlighting->created_by;
-
+            
+            $photo = new Photo();
+            $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
+            if(array_has($params, 'created_at')) {
+                $date = Carbon::parse($params['created_at']);
+                $streetlighting->created_at = $date;
+                $survey->created_at = $date;
+                $photo->created_at = $date;
+            }
+            
             $streetlighting->save();
             $streetlighting->survey()->save($survey);
+            
+            $photo->name = $streetlighting->id;
+            if(array_has($params, 'encoded_photo')) {
+                $encodedPhoto = $params['encoded_photo'];
+                if(!empty($encodedPhoto)) {
+                    $path = '/upload/streetlighting/' . $streetlighting->id . '.png';
+                    $destination = base_path() . '/public' . $path;
+                    file_put_contents($destination, base64_decode($encodedPhoto));
+                    $photo->path = $destination;
+                }
+            }
+            $streetlighting->photo()->save($photo);
 
             $data['data'] = [
                 'survey_id' => $survey->id,
@@ -232,8 +268,29 @@ class StreetLightingSurveyController extends Controller {
             $lamp->status = array_key_exists('status', $params) ? $params['status'] : $lamp->status;
             $lamp->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $lamp->created_by;
 
+            $photo = new Photo();
+            $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
+            if(array_has($params, 'created_at')) {
+                $date = Carbon::parse($params['created_at']);
+                $lamp->created_at = $date;
+                $survey->created_at = $date;
+                $photo->created_at = $date;
+            }
+            
             $lamp->save();
             $lamp->survey()->save($survey);
+            
+            $photo->name = $lamp->id;
+            if(array_has($params, 'encoded_photo')) {
+                $encodedPhoto = $params['encoded_photo'];
+                if(!empty($encodedPhoto)) {
+                    $path = '/upload/streetlighting/lamp/' . $lamp->id . '.png';
+                    $destination = base_path() . '/public' . $path;
+                    file_put_contents($destination, base64_decode($encodedPhoto));
+                    $photo->path = $path;
+                }
+            }
+            $lamp->photo()->save($photo);
 
             $data['data'] = [
                 'survey_id' => $survey->id,
