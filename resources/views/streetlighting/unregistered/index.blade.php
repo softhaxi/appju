@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{trans('menu.street_lighting')}} · {{trans('app.name')}}</title>
+        <title>{{trans('menu.unregistered_street_lighting')}} · {{trans('app.name')}}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
@@ -106,28 +106,19 @@
         </nav>
         <div class="main-container">
             <div class="container">
-                <h3>{{trans('menu.street_lighting')}}</h3>
+                <h3>{{trans('menu.unregistered_street_lighting')}}</h3>
                 <div class="row">
                     <form id="form-search" class="form-horizontal">
                         <div class="form-group">
-                            <label for="code" class="col-md-2 control-label">{{trans('form.customer_number')}}</label>
+                            <label for="name" class="col-md-2 control-label">{{trans('form.customer_name')}}</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" name="code" id="code" placeholder="{{trans('form.customer_number')}}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="name" class="col-md-2 control-label">{{trans('form.name')}}</label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" name="name" id="name" placeholder="{{trans('form.name')}}">
+                                <input type="text" class="form-control" name="name" id="name" placeholder="{{trans('form.customer_name')}}">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
                                 <div class="btn-group-sm">
                                     <button type="button" class="btn btn-default" onclick="doSearchForm();"><i class="fa fa-search fa-fw" aria-hidden="true"></i> {{trans('form.search')}}</button>
-                                    <button type="button" class="btn btn-success" onclick="showNewStreetLightingForm();"><i class="fa fa-plus fa-fw" aria-hidden="true"></i> {{trans('form.add')}}</button>
-                                    <button type="button" class="btn btn-primary" onclick="showImportStreetLightingForm();"><i class="fa fa-upload fa-fw" aria-hidden="true"></i> {{trans('form.import')}}</button>
-                                <!--<a href="{{url('/user/import')}}" class="btn btn-success" role="button">{{trans('form.import')}}</a>-->
                                 </div>
                             </div>
                         </div>
@@ -140,12 +131,11 @@
                         data-pagination-loop="false">
                         <thead class="text-center"> 
                             <tr>
-                                <th class="col-sm-2" data-field="code" data-sortable="true" data-formatter="codeFormatter">{{trans('form.customer_number')}}</th>
-                                <th data-field="name" data-sortable="true">{{trans('form.name')}}</th>
+                                <th class="col-sm-3" data-field="name" data-sortable="true">{{trans('form.customer_name')}}</th>
                                 <th data-field="full_address">{{trans('form.address')}}</th>
                                 <th class="col-sm-1" data-field="power">{{trans('form.power')}}</th>
-                                <th class="col-sm-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
-                                <th class="col-sm-1" data-formatter="actionFormatter"></th>
+                                <th class="col-sm-1" data-field="rate">{{trans('form.rate')}}</th>
+                                <!--<th class="col-sm-1" data-formatter="actionFormatter"></th>-->
                             </tr> 
                         </thead> 
                         <tbody></tbody> 
@@ -459,12 +449,11 @@
 
             function doSearchForm() {
                 var data = new FormData();
-                data.append('code', $('input[name=code]').val());
                 data.append('name', $('input[name=name]').val());
 
                 $('#modal-loading').modal('show');
                 $.ajax({
-                    url: '{{url('/json/streetlighting/search')}}',
+                    url: '{{url('/json/streetlighting/unregistered')}}',
                     type: 'POST',
                     data: data,
                     contentType: false,
@@ -691,20 +680,10 @@
                 return '<div class="text-center"><a href="{{url('/streetlighting')}}/' +row.id+'">'+value+'</a></div>';
             }
 
-            function statusFormatter(value, row, index) {
-                if(row.status == 1) {
-                    return '<p class="text-primary text-center">{{trans('form.active')}}</p>';
-                } else {
-                    return '<p class="text-danger text-center">{{trans('form.inactive')}}</p>';
-                }
-            }
-
             function actionFormatter(value, row, index) {
                 var buttons = '<div class="btn-group-xs text-center">';
-                buttons += ' <button class="btn btn-warning" onclick="doRedirectEditStreetLighting(' + 
-                        "'" + row.id + "'" + ')"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></button>';
-                buttons += ' <button class="btn btn-danger" onclick="showStreetLightingDeleteConfirmation(' + 
-                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
+                buttons += ' <button class="btn btn-primary" onclick="doCreateStreetLightingForm(' + 
+                        "'" + row.name + "'" + ')"><i class="fa fa-save fa-fw" aria-hidden="true"></i></button>';
                 buttons += '</div>';
                 return buttons;
             }

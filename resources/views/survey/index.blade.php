@@ -67,7 +67,19 @@
                     <ul class="nav navbar-nav">
                         <li><a href="{{url('home')}}">{{trans('menu.home')}}</a></li>
                         <li><a href="{{url('user')}}">{{trans('menu.user')}}</a></li>
-                        <li><a href="{{url('streetlighting')}}">{{trans('menu.legal_street_lighting')}}</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {{trans('menu.street_lighting')}}  <span class="caret"></span>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="clearfix">
+                                        <a href="{{url('streetlighting')}}">{{trans('menu.registered_street_lighting')}}</a></li>
+                                    </li>
+                                    <li class="clearfix">
+                                        <a href="{{url('streetlighting/unregistered')}}">{{trans('menu.unregistered_street_lighting')}}</a></li>
+                                    </li>
+                                </ul>
+                            </a>
+                        </li>
                         <li class="active"><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
@@ -97,7 +109,7 @@
                 <h3>{{trans('menu.survey')}}</h3>
                 <div class="row">
                     <form id="form-search" class="form-horizontal">
-                        <input type="hidden" name="status" value="0"/>
+                        <input type="hidden" name="status" value="1"/>
                         <div class="form-group">
                             <label for="date" class="col-md-2 control-label">{{trans('form.date_filter')}}</label>
                             <div class="col-md-3">
@@ -133,11 +145,11 @@
                         data-pagination-loop="false">
                         <thead> 
                             <tr>
-                                <th class="col-md-2" data-field="date_time" data-sortable="true">{{trans('form.date_time')}}</th>
+                                <th class="col-md-2" data-field="date_time" data-sortable="true" data-formatter="dateTimeFormatter">{{trans('form.date_time')}}</th>
                                 <th class="col-md-1" data-field="action">{{trans('form.action')}}</th>
                                 <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
-                                <th class="col-md-1" data-field="creator">{{trans('form.created_by')}}</th>
-                                <th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>
+                                <th class="col-md-1" data-field="created_by">{{trans('form.created_by')}}</th>
+                                <!--<th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>-->
                                 <th class="col-md-1" data-formatter="actionFormatter"></th>
                             </tr> 
                         </thead> 
@@ -262,6 +274,14 @@
                 });
             }
             
+            function doApproveSurveyConfirmation(id) {
+                
+            }
+            
+            function dateTimeFormatter(value, row, index) {
+                return '<a href="' + row.url + '">' + value + '</a>';
+            }
+            
             function customerFormatter(value, row, index) {
                 if(row.customer_code != null) {
                     return row.customer_code + ' - ' + row.customer_name;
@@ -280,16 +300,17 @@
             
             function actionFormatter(value, row, index) {
                 var buttons = '<div class="btn-group-xs text-center">';
-                
+                /*
                 if(row.status == 0) {
-                    buttons += ' <button class="btn btn-primary" onclick="doApproveSurvey(' + 
+                    buttons += ' <button class="btn btn-primary" onclick="doApproveSurveyConfirmation(' + 
                         "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
                 } else if(row.status == 2) {
                     buttons += ' <button class="btn btn-warning" onclick="doSurveyReapproveConfirmation(' + 
                         "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
-                    buttons += ' <button class="btn btn-danger" onclick="showSurveyDeleteConfirmation(' + 
-                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
                 }
+                */
+                buttons += ' <button class="btn btn-danger" onclick="showSurveyDeleteConfirmation(' + 
+                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
                 buttons += '</div>';
                 return buttons;
             }

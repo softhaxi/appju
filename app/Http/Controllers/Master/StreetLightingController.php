@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Controller;
 use APPJU\Models\Master\Customer;
+use APPJU\Models\Detail\StreetLighting;
 
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
@@ -30,7 +31,47 @@ class StreetLightingController extends Controller {
      * @return type
      */
     public function index(Request $request) {
-        return $this->search($request);
+        $params = $request->all();
+        $params['status'] = 1;
+        $customers = $this->getCustomers($params);
+        $data = [];
+
+        foreach ($customers as $customer) {
+            $address = $customer->address;
+            if($customer->address2 != '') {
+                $address .= ' ' . $customer->address2;
+            } 
+            if($customer->address3 != '') {
+                $address .= ' ' . $customer->address3;
+            }
+            $item = [
+                'id' => $customer->id,
+                'code' => $customer->code,
+                'name' => $customer->name,
+                'full_address' => $address,
+                'address' => $customer->address,
+                'address2' => $customer->address2,
+                'address3' => $customer->address3,
+                'rate' => $customer->rate,
+                'power' => $customer->power,
+                'stand_start' => $customer->stand_start,
+                'stand_end' => $customer->stand_end,
+                'kwh' => $customer->kwh,
+                'ptl' => $customer->ptl,
+                'stamp' => $customer->stamp,
+                'bank_fee' => $customer->bank_fee,
+                'ppn' => $customer->ppn,
+                'pju' => $customer->pju,
+                'monthly_bill' => $customer->monthly_bill,
+                'status' => $customer->status
+            ];
+            $data[] = $item;
+        }
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
     }
 
     /**
@@ -39,7 +80,8 @@ class StreetLightingController extends Controller {
      * @return type
      */
     public function search(Request $request) {
-        $customers = $this->getCustomers($request->all());
+        $params = $request->all();
+        $customers = $this->getCustomers($params);
         $data = [];
 
         foreach ($customers as $customer) {
@@ -198,6 +240,11 @@ class StreetLightingController extends Controller {
                         'data' => $data], 200);
     }
 
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
     public function delete(Request $request) {
         $validator = Validator::make($request->all(), [
             'id' => 'required'
@@ -316,6 +363,55 @@ class StreetLightingController extends Controller {
                         'response' => 'Accepted for processing',
                         'message' => 'Street lighting <strong>' . $customer->code . ' - ' . $customer->name . '</strong> has been <strong>' . $request->input('action') .'d</strong>',
                         'data' => $customer], 202);
+    }
+    
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function unregistered(Request $request) {
+        $params = $request->all();
+        $params['status'] = -1;
+        $customers = $this->getUnregisteredCustomers($params);
+        $data = [];
+
+        foreach ($customers as $customer) {
+            $address = $customer->address;
+            if($customer->address2 != '') {
+                $address .= ' ' . $customer->address2;
+            } 
+            if($customer->address3 != '') {
+                $address .= ' ' . $customer->address3;
+            }
+            $item = [
+                'id' => $customer->id,
+                'code' => $customer->code,
+                'name' => $customer->name,
+                'full_address' => $address,
+                'address' => $customer->address,
+                'address2' => $customer->address2,
+                'address3' => $customer->address3,
+                'rate' => $customer->rate,
+                'power' => $customer->power,
+                'stand_start' => $customer->stand_start,
+                'stand_end' => $customer->stand_end,
+                'kwh' => $customer->kwh,
+                'ptl' => $customer->ptl,
+                'stamp' => $customer->stamp,
+                'bank_fee' => $customer->bank_fee,
+                'ppn' => $customer->ppn,
+                'pju' => $customer->pju,
+                'monthly_bill' => $customer->monthly_bill,
+                'status' => $customer->status
+            ];
+            $data[] = $item;
+        }
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
     }
 
     /**
@@ -449,9 +545,31 @@ class StreetLightingController extends Controller {
      * @return List of customer
      */
     private function getCustomers(array $params) {
-        $customers = Customer::get();
+        $customers = Customer::where('code', '!=', 'DUMMY')
+                ->get();
         if(array_key_exists('code', $params) && $params['code'] != '') {
             $customers = $customers->where('code', $params);
+        }
+        if(array_key_exists('status', $params)) {
+            $customers = $customers->where('status', (int) $params['status']);
+        }
+
+        return $customers->all();
+    }
+    
+    /**
+     * 
+     * @param array $params
+     * @return List of customer
+     */
+    private function getUnregisteredCustomers(array $params) {
+        $customers = Customer::where('status', -1)
+                ->get();
+        if(array_key_exists('code', $params) && $params['code'] != '') {
+            $customers = $customers->where('code', $params);
+        }
+        if(array_key_exists('status', $params)) {
+            $customers = $customers->where('status', (int) $params['status']);
         }
 
         return $customers->all();

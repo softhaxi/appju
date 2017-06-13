@@ -66,7 +66,19 @@
                     <ul class="nav navbar-nav">
                         <li><a href="{{url('home')}}">{{trans('menu.home')}}</a></li>
                         <li><a href="{{url('user')}}">{{trans('menu.user')}}</a></li>
-                        <li class="active"><a href="{{url('streetlighting')}}">{{trans('menu.legal_street_lighting')}}</a></li>
+                        <li class="dropdown active">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {{trans('menu.street_lighting')}}  <span class="caret"></span>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li class="clearfix">
+                                        <a href="{{url('streetlighting')}}">{{trans('menu.registered_street_lighting')}}</a></li>
+                                    </li>
+                                    <li class="clearfix">
+                                        <a href="{{url('streetlighting/unregistered')}}">{{trans('menu.unregistered_street_lighting')}}</a></li>
+                                    </li>
+                                </ul>
+                            </a>
+                        </li>
                         <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">

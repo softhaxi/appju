@@ -45,13 +45,16 @@ class UserController extends Controller {
         $user = $this->getUserMobile($request->all());
 
         if(!is_null($user)) {
+            $full_name = $user->first_name;
+            if($user->middle_name != '') {
+                $full_name .= ' ' . $user->middle_name;
+            } 
+            $full_name .= ' ' . $user->last_name;
             $data = [
                 'id' => $user->id,
                 'username' => $user->name,
                 'email' => $user->email,
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
+                'full_name' => $full_name,
                 'avatar' => $user->avatar,
                 'level' => $user->level
             ];

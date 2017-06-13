@@ -43,6 +43,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', function () {
             return view('streetlighting.index');
         });
+        Route::get('/unregistered', function () {
+            return view('streetlighting.unregistered.index');
+        });
         Route::get('/{id}', function ($id) {
             return view('streetlighting.detail')
                 ->with('id', $id);
@@ -89,6 +92,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/search', 'Master\StreetLightingController@search');
             Route::post('/status', 'Master\StreetLightingController@status');
             Route::post('/update', 'Master\StreetLightingController@put');
+            Route::post('/unregistered', 'Master\StreetLightingController@unregistered');
             Route::get('/{id}', 'Master\StreetLightingController@view');
         });
 

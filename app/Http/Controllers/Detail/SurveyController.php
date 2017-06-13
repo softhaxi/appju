@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Controller;
+use APPJU\Models\Security\User;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
 use APPJU\Models\Master\Customer;
@@ -30,6 +31,8 @@ class SurveyController extends Controller {
 
         foreach ($surveys as $survey) {
             $dateTime = date_create($survey->created_at);
+            $user = User::where('id', $survey->created_by)
+                    ->first();
             
             $customer = $this->getCustomerByid($survey->surveyable->customer_id);
             if(!is_null($customer)) {
@@ -38,25 +41,27 @@ class SurveyController extends Controller {
                     'survey_class' => $survey->class,
                     'action' => $survey->action,
                     'customer_id' => $customer->id,
-                    'customer_code' => $customer->code,
+                    'customer_code' => $customer->code != 'DUMMY' ? $customer->code : null,
                     'customer_name' => $customer->name,
                     'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
+                    'created_by' => $user->name,
                     'status' => $survey->status,
-                    'url' => $survey->url,
-                    'morph' => ($survey->surveyable_type == StreetLighting::class)
+                    'base_url' => url($survey->url),
+                    'url' => url($survey->url . '/' . $survey->surveyable->id)
                 ];
             } else {
-                
                 $item = [
                     'id' => $survey->id,
                     'survey_class' => $survey->class,
                     'action' => $survey->action,
                     'customer_id' => null,
                     'customer_code' => null,
-                    'customer_name' => $survey->surveyable->name,
+                    'customer_name' => strtoupper($survey->surveyable->name),
                     'date_time' => date_format($dateTime,"Y/m/d H:i:s"),
+                    'created_by' => $user->name,
                     'status' => $survey->status,
-                    'url' => $survey->url
+                    'base_url' => url($survey->url),
+                    'url' => url($survey->url . '/' . $survey->surveyable->id)
                 ];
             }
             $data[] = $item;
@@ -75,7 +80,8 @@ class SurveyController extends Controller {
      */
     protected function getParentSurveys(array $params) {
         $surveys = Survey::whereNull('parent_id')
-                ->where('status', '!=', 1)
+                //->where('status', '!=', 1)
+                ->orderBy('created_at', 'desc')
                 ->get();
         if(array_key_exists('status', $params)) {
             $surveys = $surveys->where('status', (int)$params['status']);

@@ -66,7 +66,19 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{url('home')}}">{{trans('menu.home')}}</a></li>
                     <li class="active"><a href="{{url('user')}}">{{trans('menu.user')}}</a></li>
-                    <li><a href="{{url('streetlighting')}}">{{trans('menu.legal_street_lighting')}}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            {{trans('menu.street_lighting')}}  <span class="caret"></span>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="clearfix">
+                                    <a href="{{url('streetlighting')}}">{{trans('menu.registered_street_lighting')}}</a></li>
+                                </li>
+                                <li class="clearfix">
+                                    <a href="{{url('streetlighting/unregistered')}}">{{trans('menu.unregistered_street_lighting')}}</a></li>
+                                </li>
+                            </ul>
+                        </a>
+                    </li>
                     <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -109,6 +121,7 @@
                                 <input type="text" class="form-control" name="full_name" placeholder="{{trans('form.full_name')}}">
                             </div>
                         </div>
+                        <!--
                         <div class="form-group input-sm">
                             <label for="email" class="col-md-2 control-label">{{trans('form.email')}}</label>
                             <div class="col-md-4">
@@ -121,6 +134,7 @@
                                 <input type="text" class="form-control" name="device_code" placeholder="{{trans('form.device_code')}}">
                             </div>
                         </div>
+                        -->
                         <div class="form-group input-sm">
                             <div class="col-md-offset-2 col-md-10">
                                 <div class="btn-group-sm">

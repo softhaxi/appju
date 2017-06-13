@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Detail\SurveyController as Controller;
+use APPJU\Models\Master\Customer;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
 use APPJU\Models\Detail\StreetLightingLamp as Lamp;
@@ -44,14 +45,14 @@ class StreetLightingSurveyController extends Controller {
         }
 
         $params = $request->all();
-        $params['survey_status'] = 0;
+        $params['survey_status'] = 1;
         $params['level'] = 1;
         $params['url'] = '/survey/streetlighting';
         $params['action'] = 'CREATE';
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
-        $params['status'] = 0;
+        $params['status'] = 1;
 
         $result = $this->saveStreetLighting($params);
         if (array_key_exists('errors', $result)) {
@@ -119,7 +120,7 @@ class StreetLightingSurveyController extends Controller {
                 ->first();
         
         $params = $request->all();
-        $params['survey_status'] = 0;
+        $params['survey_status'] = 1;
         $params['parent_id'] = $params['parent_survey_id'];
         $params['action'] = 'CREATE';
         $params['url'] = '/survey/streetlighting/lamp';
@@ -127,7 +128,7 @@ class StreetLightingSurveyController extends Controller {
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
         }
-        $params['status'] = 0;
+        $params['status'] = 1;
 
         $result = $this->saveStreetLightingLamp($params);
         if (array_key_exists('errors', $result)) {
@@ -192,21 +193,36 @@ class StreetLightingSurveyController extends Controller {
             $streetlighting->geolocation = array_key_exists('geolocation', $params) ? trim($params['geolocation']) : $streetlighting->geolocation;
             $streetlighting->status = array_key_exists('status', $params) ? $params['status'] : $streetlighting->status;
             $streetlighting->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $streetlighting->created_by;
-            
-            $photo = new Photo();
-            $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
+    
+            $date = new Carbon();
             if(array_has($params, 'created_at')) {
                 $date = Carbon::parse($params['created_at']);
                 $streetlighting->created_at = $date;
                 $survey->created_at = $date;
-                $photo->created_at = $date;
+            }
+            
+            if($streetlighting->customer_id == '') {
+                $customer = new Customer();
+                $customer->code = 'DUMMY';
+                $customer->name = array_key_exists('name', $params) ? strtoupper(trim($params['name'])) : $customer->name;
+                $customer->address = array_key_exists('address', $params) ? ucfirst(trim($params['address'])) : $customer->address;
+                $customer->power = array_key_exists('power', $params) ? trim($params['power']) : $customer->power;
+                $customer->rate = array_key_exists('power', $params) ? trim($params['rate']) : $customer->rate;
+                $customer->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $customer->created_by;
+                $customer->status = -1;
+                $customer->created_at = $date;
+                $customer->save();
+                
+                $streetlighting->customer_id = $customer->id;
             }
             
             $streetlighting->save();
             $streetlighting->survey()->save($survey);
             
-            $photo->name = $streetlighting->id;
             if(array_has($params, 'encoded_photo')) {
+                $photo = new Photo();
+                $photo->created_at = $date;
+                $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
                 $encodedPhoto = $params['encoded_photo'];
                 if(!empty($encodedPhoto)) {
                     $path = '/upload/streetlighting/' . $streetlighting->id . '.png';
@@ -214,8 +230,9 @@ class StreetLightingSurveyController extends Controller {
                     file_put_contents($destination, base64_decode($encodedPhoto));
                     $photo->path = $path;
                 }
+                $photo->name = $streetlighting->id;
+                $streetlighting->photo()->save($photo);
             }
-            $streetlighting->photo()->save($photo);
 
             $data['data'] = [
                 'survey_id' => $survey->id,
@@ -268,29 +285,30 @@ class StreetLightingSurveyController extends Controller {
             $lamp->status = array_key_exists('status', $params) ? $params['status'] : $lamp->status;
             $lamp->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $lamp->created_by;
 
-            $photo = new Photo();
-            $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
+            $date = new Carbon();
             if(array_has($params, 'created_at')) {
                 $date = Carbon::parse($params['created_at']);
                 $lamp->created_at = $date;
                 $survey->created_at = $date;
-                $photo->created_at = $date;
             }
             
             $lamp->save();
             $lamp->survey()->save($survey);
             
-            $photo->name = $lamp->id;
             if(array_has($params, 'encoded_photo')) {
+                $photo = new Photo();
+                $photo->created_at = $date;
+                $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
                 $encodedPhoto = $params['encoded_photo'];
                 if(!empty($encodedPhoto)) {
-                    $path = '/upload/streetlighting/lamp/' . $lamp->id . '.png';
+                    $path = '/upload/streetlighting/' . $streetlighting->id . '.png';
                     $destination = base_path() . '/public' . $path;
                     file_put_contents($destination, base64_decode($encodedPhoto));
                     $photo->path = $path;
                 }
+                $photo->name = $lamp->id;
+                $lamp->photo()->save($photo);
             }
-            $lamp->photo()->save($photo);
 
             $data['data'] = [
                 'survey_id' => $survey->id,
