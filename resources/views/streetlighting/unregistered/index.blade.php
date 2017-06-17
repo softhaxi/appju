@@ -345,28 +345,29 @@
                 </div>
             </div>
 
-            <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
-                role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog modal-sm">
+            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
-                                <span class="glyphicon glyphicon-time">
-                                </span> Please Wait
+                                <span class="glyphicon glyphicon-info-sign">
+                                </span> Confirmation
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-info
-                                progress-bar-striped active"
-                                style="width: 100%">
-                                </div>
+                            <p id="text-confirmation" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-group-sm">
+                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
+                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+            
             <div class="modal fade" id="modal-notification" tabindex="-1" 
                 role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog" role="document">
@@ -387,23 +388,22 @@
                 </div>
             </div>
             
-            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
-                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog" role="document">
+            <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
+                role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-sm">
                     <div class="modal-content">
                         <div class="modal-header bg-primary">
                             <h4 class="modal-title">
-                                <span class="glyphicon glyphicon-info-sign">
-                                </span> Confirmation
+                                <span class="glyphicon glyphicon-time">
+                                </span> Please Wait
                             </h4>
                         </div>
                         <div class="modal-body">
-                            <p id="text-confirmation" class="text-message"></p>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="btn-group-sm">
-                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
-                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-info
+                                progress-bar-striped active"
+                                style="width: 100%">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
 
                 $('#modal-loading').modal('show');
                 $.ajax({
-                    url: '{{url('/json/streetlighting/unregistered')}}',
+                    url: '{{url('/json/streetlighting/unregistered/search')}}',
                     type: 'POST',
                     data: data,
                     contentType: false,

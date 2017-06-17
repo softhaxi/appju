@@ -150,7 +150,7 @@
                                 <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
                                 <th class="col-md-1" data-field="created_by">{{trans('form.created_by')}}</th>
                                 <!--<th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>-->
-                                <th class="col-md-1" data-formatter="actionFormatter"></th>
+                                <!--<th class="col-md-1" data-formatter="actionFormatter"></th>-->
                             </tr> 
                         </thead> 
                         <tbody></tbody> 

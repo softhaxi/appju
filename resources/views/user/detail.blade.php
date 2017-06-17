@@ -124,14 +124,12 @@
                                     </span>
                                 </div>
                             </div>
-                            <!--
                             <div id="password-group" class="form-group mb5">
                                 <label class="col-md-3 control-label">{{trans('form.password')}}</label>
                                 <div class="col-md-6">
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="showResetPasswordForm('{{$id}}')"><i class="fa fa-unlock-alt fa-fw" aria-hidden="true"></i> {{trans('button.reset_password')}}</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="showResetPasswordConfirmation('{{$id}}')"><i class="fa fa-unlock-alt fa-fw" aria-hidden="true"></i> {{trans('button.reset_password')}}</button>
                                 </div>
                             </div>
-                            -->
                             <div id="email-group" class="form-group mb5">
                                 <label class="col-md-3 control-label">{{trans('form.email')}}</label>
                                 <div class="col-md-6">
@@ -175,6 +173,16 @@
                                 </div>
                             </div>
                             <div id="status-group" class="form-group mb5">
+                                <label class="col-md-3 control-label">{{trans('form.status')}}</label>
+                                <div class="col-md-6">
+                                    <input id="status" name="status" type="text" class="form-control" placeholder="{{trans('form.status')}}">
+                                    <span class="help-block">
+                                        <strong id="status-help" class="help-text"></strong>
+                                    </span>
+                                </div>
+                            </div>
+                           <!--
+                            <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-3 col-md-6">
                                     <input type="checkbox" id="status" name="status" disabled> {{trans('form.active')}}
                                     <span class="help-block">
@@ -182,6 +190,7 @@
                                     </span>
                                 </div>
                             </div>
+                           -->
                             <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-3 col-md-6">
                                     <div class="btn-group-sm">
@@ -195,46 +204,7 @@
                     </div>
                 </form>
             </div>
-            <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
-                role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary">
-                            <h4 class="modal-title">
-                                <span class="glyphicon glyphicon-time">
-                                </span> Please Wait
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-info
-                                progress-bar-striped active"
-                                style="width: 100%">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modal-notification" tabindex="-1" 
-                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary">
-                            <h4 class="modal-title">
-                                <span class="glyphicon glyphicon-info-sign">
-                                </span> Notification
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <p id="text-notification" class="text-message"></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <div class="modal fade" id="modal-confirmation" tabindex="-1" 
                 role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog" role="document">
@@ -252,6 +222,50 @@
                             <div class="btn-group-sm">
                                 <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
                                 <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal fade" id="modal-notification" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
+                                </span> Notification
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-notification" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-group-sm">
+                                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
+                role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-time">
+                                </span> Please Wait
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-info
+                                progress-bar-striped active"
+                                style="width: 100%">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -310,6 +324,40 @@
                 });
                 $('#modal-notification').modal('show');
             }
+            
+            function showConfirmation(message, status, callback, params) {
+                $('#modal-confirmation').on('show.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-confirmation').addClass('text-primary');
+                    } else {
+                        $('#text-confirmation').addClass('text-danger');
+                    }
+                    $('#text-confirmation').html(message);
+                    
+                    $('#btn-ok').on('click', function(event) {
+                        if(callback != null) {
+                            if(params != null) {
+                                callback(params);
+                            } else {
+                                callback();
+                            }
+                        }
+                    });
+                    
+                    
+                });
+                $('#modal-confirmation').on('hidden.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-confirmation').removeClass('text-primary');
+                    } else {
+                        $('#text-confirmation').removeClass('text-danger');
+                    }
+                    $('#btn-ok').off('click');
+                    $('#modal-confirmation').off('show.bs.modal');
+                    $('#modal-confirmation').off('hidden.bs.modal');
+                });
+                $('#modal-confirmation').modal('show');
+            }
 
             function loadDetailUser() {
                 $('#modal-loading').modal('show');
@@ -338,11 +386,18 @@
                         $('#device_code').prop('disabled', true);
                         $('#mobile').val(data.mobile);
                         $('#mobile').prop('disabled', true);
+                        $('#status').prop('disabled', true);
                         if(data.status == 1) {
-                            $('#status').prop('checked', true);
+                            $('#status').val('{{trans('form.active')}}');
                             $('#btn-activate').hide();
+                        } else if(data.status == 2) {
+                            //$('#password-group').hide();
+                            $('#status').val('{{trans('form.reset')}}');
+                            $('#btn-activate').hide();
+                            $('#btn-deactivate').hide();
                         } else {
-                            $('#status').prop('checked', false);
+                            $('#password-group').hide();
+                            $('#status').val('{{trans('form.inactive')}}');
                             $('#btn-deactivate').hide();
                         }
                     },
@@ -360,6 +415,7 @@
                 var data = new FormData();
                 data.append('id', id);
                 data.append('action', action);
+                $('#modal-loading').modal('show');
                 $.ajax({
                     url: '{{url('/json/user/status')}}',
                     type: 'POST',
@@ -380,7 +436,7 @@
             }
             
             function doRedirectDetailUser(params) {
-                if(params.code == 202) {
+                if(params.code == 200) {
                     window.location.href = "{{url('/user/')}}/" + params.data.id;
                 }
             }
@@ -399,16 +455,8 @@
                     success: function (response) {
                         var message = '';
                         var data = response.data;
-                        message = 'Are you sure for reset password user <strong>' + data.username + "</strong> ?";
-                        $('#modal-confirmation').on('hidden.bs.modal', function(event) {
-                            $('#button-delete-ok').off("click");
-                        });
-                        $('#modal-confirmation').modal('show');
-                        $('#text-confirmation').html(message);
-                        $('#text-confirmation').addClass('text-danger');
-                        $('#btn-ok').on('click', function(event) {
-                            doResetPasswordUserForm(data.id);
-                        });
+                        message = 'Are you sure to delete user <strong>' + data.username + "</strong> ?";
+                        showConfirmation(message, true, doResetPasswordUserForm, data.id);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');
@@ -417,7 +465,33 @@
                 });
             }
 
-            function doResetPasswordUserForm(id) {
+            function showResetPasswordConfirmation(id) {
+                $('#modal-loading').modal('show');
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url('/json/user')}}/' + id,
+                    async: false,
+                    beforeSend: function (xhr) {
+                        if (xhr && xhr.overrideMimeType) {
+                            xhr.overrideMimeType('application/json;charset=utf-8');
+                        }
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        $('#modal-loading').modal('hide');
+                        var message = '';
+                        var data = response.data;
+                        message = 'Are you sure to reset password user <strong>' + data.username + "</strong> ?";
+                        showConfirmation(message, true, doResetPasswordUser, data.id);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        $('#modal-loading').modal('hide');
+                        var json = JSON.parse(xhr.responseText);
+                    }
+                });
+            }
+            
+            function doResetPasswordUser(id) {
                 var data = new FormData();
                 data.append('id', id);
                 $('#modal-loading').modal('show');
@@ -427,15 +501,17 @@
                     data: data,
                     contentType: false,
                     processData: false,
-                    success: function(response) {
+                    success: function (response) {
                         $('#modal-loading').modal('hide');
                         $('#modal-confirmation').modal('hide');
                         $('#btn-ok').off("click");
-                        showNotification(response.message, false, doSearchForm, null);
+                        var message = '<p>New password for user <strong>' + response.data.username + '</strong> is <strong>' + response.data.password + '</strong>';
+                        showNotification(message, false, doRedirectDetailUser, response);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');
                         var json = JSON.parse(xhr.responseText);
+                        showNotification(json.errors, true, null, null);
                     }
                 });
             }

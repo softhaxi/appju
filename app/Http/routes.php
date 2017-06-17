@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::group(['prefix' => '/user'], function() {
             Route::post('/', 'Security\UserController@post');
             Route::post('/delete', 'Security\UserController@delete');
+            Route::post('/reset', 'Security\UserController@reset');
             Route::post('/search', 'Security\UserController@search');
             Route::post('/status', 'Security\UserController@status');
             Route::post('/update', 'Security\UserController@put');
@@ -89,15 +90,20 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/', 'Master\StreetLightingController@post');
             Route::post('/delete', 'Master\StreetLightingController@delete');
             Route::post('/import', 'Master\StreetLightingController@import');
+            Route::post('/location', 'Master\StreetLightingController@location');
+            Route::get('/search', 'Master\StreetLightingController@search');
             Route::post('/search', 'Master\StreetLightingController@search');
             Route::post('/status', 'Master\StreetLightingController@status');
             Route::post('/update', 'Master\StreetLightingController@put');
-            Route::post('/unregistered', 'Master\StreetLightingController@unregistered');
+            Route::post('/unregistered/search', 'Master\StreetLightingController@unregistered');
+            Route::get('/unregistered/search', 'Master\StreetLightingController@unregistered');
             Route::get('/{id}', 'Master\StreetLightingController@view');
         });
 
         Route::group(['prefix' => '/survey'], function() {
             Route::post('/search', 'Detail\SurveyController@search');
+            Route::post('/streetlighting/search', 'Survey\StreetLightingSurveyController@search');
+            Route::post('/streetlighting/lamp/search', 'Survey\StreetLightingSurveyController@search');
             Route::get('/{id}', 'Detail\SurveyController@view');
         });
     });
@@ -107,6 +113,7 @@ Route::group(['middleware' => 'auth'], function () {
 Route::group(['prefix' => '/api'], function() {
     Route::group(['prefix' => '/user'], function() {
         Route::post('/auth', 'Security\UserController@auth');
+        Route::post('/changepassword', 'Security\UserController@changePassword');
     });
 
     Route::group(['prefix' => '/streetlighting'], function() {

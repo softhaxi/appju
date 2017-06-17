@@ -42,6 +42,7 @@ return [
     'ppn' => 'PPN',
     'ptl' => 'PTL',
     'rate' => 'Rate',
+    'reset' => 'Reset',
     'search' => 'Search',
     'search_keyword' => 'Search by keyword',
     'stamp' => 'Stamp',

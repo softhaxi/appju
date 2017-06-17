@@ -22,6 +22,25 @@ use Validator;
  * @since 1.0
  */
 class StreetLightingSurveyController extends Controller {
+    
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function searchLamp(Request $request) {
+        $params = $request->all();
+        if(array_key_exists($params, 'streetlighting')) {
+            $lamps = $this->getStreetLightingsByStreetLighting($params);
+        }
+        $data = [];
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
+    }
 
     /**
      * 
@@ -67,17 +86,6 @@ class StreetLightingSurveyController extends Controller {
             'mobile_survey_id' => $params['mobile_survey_id'],
             'has_file' => $request->hasFile('photo')
         ];
-        
-        /**
-        if($request->has('encoded_photo')) {
-            $encodedPhoto = $request->input('encoded_photo');
-            if(!empty($encodedPhoto)) {
-                $destination = base_path() . '/public/upload/streetlighting/' . $streetlighting['street_lighting_id'] . '.png';
-                file_put_contents($destination, base64_decode($encodedPhoto));
-            }
-            $data = array_add($data, 'file_name', $destination);
-        }
-        */
         
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
@@ -156,7 +164,7 @@ class StreetLightingSurveyController extends Controller {
                     'message' => 'Street lighting survey has been saved',
                     'data' => $data], 202);
     }
-
+    
     /**
      * 
      * @param array $params
@@ -202,17 +210,22 @@ class StreetLightingSurveyController extends Controller {
             }
             
             if($streetlighting->customer_id == '') {
-                $customer = new Customer();
-                $customer->code = 'DUMMY';
-                $customer->name = array_key_exists('name', $params) ? strtoupper(trim($params['name'])) : $customer->name;
-                $customer->address = array_key_exists('address', $params) ? ucfirst(trim($params['address'])) : $customer->address;
-                $customer->power = array_key_exists('power', $params) ? trim($params['power']) : $customer->power;
-                $customer->rate = array_key_exists('power', $params) ? trim($params['rate']) : $customer->rate;
-                $customer->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $customer->created_by;
-                $customer->status = -1;
-                $customer->created_at = $date;
-                $customer->save();
-                
+                $customer = Customer::where('status', -1)
+                        ->orWhereRaw('LOWER(name) like ? ', array(strtolower(trim($params['name']))))
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                if(is_null($customer)) {
+                    $customer = new Customer();
+                    $customer->code = 'DUMMY';
+                    $customer->name = array_key_exists('name', $params) ? strtoupper(trim($params['name'])) : $customer->name;
+                    $customer->address = array_key_exists('address', $params) ? ucfirst(trim($params['address'])) : $customer->address;
+                    $customer->power = array_key_exists('power', $params) ? trim($params['power']) : $customer->power;
+                    $customer->rate = array_key_exists('power', $params) ? trim($params['rate']) : $customer->rate;
+                    $customer->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $customer->created_by;
+                    $customer->status = -1;
+                    $customer->created_at = $date;
+                    $customer->save();
+                }
                 $streetlighting->customer_id = $customer->id;
             }
             

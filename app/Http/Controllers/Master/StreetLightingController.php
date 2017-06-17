@@ -413,6 +413,41 @@ class StreetLightingController extends Controller {
                         'response' => 'Ok',
                         'data' => $data], 200);
     }
+    
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
+    public function location(Request $request) {
+        $params = $request->all();
+        if(array_key_exists('customer', $params)) {
+            $streetLightings = $this->getStreetLightingsByCustomer($params);
+        } else {
+            $streetLightings = $this->getStreetLightings($params);
+        }
+        $data = [];
+        
+        foreach ($streetLightings as $streetLighting) {
+            
+            $item = [
+                'id' => $streetLighting->id,
+                'customer_id' => $streetLighting->customer->id,
+                'customer_name' => $streetLighting->customer->name,
+                'photo' => $streetLighting->photo,
+                'latitude' =>  $streetLighting->latitude,
+                'longitude' => $streetLighting->longitude,
+                'number_of_lamp' => $streetLighting->number_of_lamp
+            ];
+            $data[] = $item;
+        }
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
+    }
 
     /**
      * Read all content from uploaded file
@@ -585,5 +620,36 @@ class StreetLightingController extends Controller {
                 ->first();
 
         return $customer;
+    }
+    
+    /**
+     * 
+     * @param array $params
+     * @return type
+     */
+    private function getStreetLightings(array $params) {
+        $streetLightings = StreetLighting::where('status', 1)
+                ->get();
+        
+        return $streetLightings->all();
+    }
+
+    /**
+     * 
+     * @param array $params
+     * @return type
+     */
+    private function getStreetLightingsByCustomer(array $params) {
+        $customer = Customer::where('id', $params['customer'])
+                ->orWhereRaw('UPPER(code) LIKE ?', array(strtoupper(trim($params['customer']))))
+                ->orWhereRaw('LOWER(name) LIKE ?', array('%'.strtolower(trim($params['customer'].'%'))))
+                ->first();
+        
+        $streetLightings = StreetLighting::with('customer')
+                ->where('customer_id', $customer->id)
+                ->where('status', 1)
+                ->get();
+        
+        return $streetLightings->all();
     }
 }

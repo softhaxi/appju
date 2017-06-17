@@ -56,7 +56,8 @@ class UserController extends Controller {
                 'email' => $user->email,
                 'full_name' => $full_name,
                 'avatar' => $user->avatar,
-                'level' => $user->level
+                'level' => $user->level,
+                'status' => $user->status
             ];
             return response()->json([
                         'code' => 200,
@@ -65,10 +66,10 @@ class UserController extends Controller {
                         'data' => $data], 200);
         } else {
             return response()->json([
-                    'code' => 404,
-                    'type' => 'NOT_FOUND',
-                    'reason' => 'Resource not found',
-                    'errors' => 'User not found'], 404);
+                    'code' => 400,
+                    'type' => 'BAD_ARG',
+                    'reason' => 'Invalid or bad argument',
+                    'errors' => 'Username or password is invalid'], 400);
         }
     }
 
@@ -276,17 +277,23 @@ class UserController extends Controller {
         $user->save();
 
         return response()->json([
-                        'code' => 202,
-                        'status' => 'ACCEPTED',
-                        'response' => 'Accepted for processing',
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
                         'message' => 'User <strong>' . $user->name . '</strong> has been <strong>' . $request->input('action') .'d</strong>',
-                        'data' => $user], 202);
+                        'data' => $user], 200);
     }
 
+    /**
+     * 
+     * @param Request $request
+     * @return type
+     */
     public function reset(Request $request) {
         $validator = Validator::make($request->all(), [
             'id' => 'required'
         ]);
+        
         if($validator->fails()) {
             return response()->json([
                     'code' => 400,
@@ -294,6 +301,80 @@ class UserController extends Controller {
                     'reason' => 'Invalid or bad argument',
                     'errors' => $validator->messages()], 400);
         }
+        
+        $user = $this->getUserById($request->input('id'));
+        
+        if(is_null($user)) {
+            return response()->json([
+                    'code' => 404,
+                    'type' => 'NOT_FOUND',
+                    'reason' => 'Resource not found',
+                    'errors' => 'User not found',
+                    'redirect' => '/user'], 404);
+        }
+        
+        $password = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 5)), 0, 5);
+        $params['id'] = $user->id;
+        $params['password'] = bcrypt($password);
+        $params['status'] = 2;
+        $params['updated_by'] = Auth::user()->id;
+        $user = $this->saveUser($params);
+        
+        $data = [
+            'id' => $user->id,
+            'username' => $user->name,
+            'password' => $password
+        ];
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
+    }
+    
+    public function changePassword(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'new_password' => 'required',
+        ]);
+        
+        if($validator->fails()) {
+            return response()->json([
+                    'code' => 400,
+                    'type' => 'BAD_ARG',
+                    'reason' => 'Invalid or bad argument',
+                    'errors' => $validator->messages()], 400);
+        }
+        
+        $user = $this->getUserById($request->input('id'));
+        
+        if(is_null($user)) {
+            return response()->json([
+                    'code' => 404,
+                    'type' => 'NOT_FOUND',
+                    'reason' => 'Resource not found',
+                    'errors' => 'User not found',
+                    'redirect' => '/user'], 404);
+        }
+        
+        $params['id'] = $user->id;
+        $params['password'] = bcrypt(trim($request->input('new_password')));
+        $params['status'] = 1;
+        $user = $this->saveUser($params);
+        
+        $data = [
+            'id' => $user->id,
+            'username' => $user->name,
+            'status' => $user->status
+        ];
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'message' => 'New password for <strong>' . $user->name . '</strong> saved',
+                        'data' => $data], 200);
     }
 
     /**
@@ -366,8 +447,7 @@ class UserController extends Controller {
 
         $credentials = [
             $field => $login,
-            'password' => $params['password'],
-            'status' => 1,
+            'password' => $params['password']
         ];
 
         if(Auth::attempt($credentials)) {
@@ -375,6 +455,9 @@ class UserController extends Controller {
         }
 
         if(!is_null($user)) {
+            if($user->status == 0) {
+                return null;
+            }
             if($user->level == 2) {
                 if(array_key_exists('device_code',$params) && $user->device_code == $params['device_code']) {
                     return $user;

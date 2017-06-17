@@ -100,6 +100,11 @@ class SurveyController extends Controller {
         return $survey;
     }
     
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
     protected function getCustomerByid($id) {
         $customer = Customer::where('id', $id)
                 ->first();

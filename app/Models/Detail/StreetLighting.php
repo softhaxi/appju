@@ -51,7 +51,7 @@ class StreetLighting extends Model {
      * @return customer
      */
     public function customer() {
-        return $this->belongTo(Customer::class, 'customer_id', 'id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
     /**

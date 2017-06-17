@@ -189,6 +189,51 @@
                     </div>
                 </form>
             </div>
+            <div class="modal fade" id="modal-confirmation" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
+                                </span> Confirmation
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-confirmation" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-group-sm">
+                                <button id="btn-ok" type="button" class="btn btn-success"><i class="fa fa-check fa-fw" aria-hidden="true"></i> OK</button>
+                                <button id="btn-cancel" type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-remove fa-fw" aria-hidden="true"></i> {{trans('button.cancel')}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal fade" id="modal-notification" tabindex="-1" 
+                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h4 class="modal-title">
+                                <span class="glyphicon glyphicon-info-sign">
+                                </span> Notification
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p id="text-notification" class="text-message"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-group-sm">
+                                <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
                 role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                 <div class="modal-dialog modal-sm">
@@ -206,25 +251,6 @@
                                 style="width: 100%">
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="modal-notification" tabindex="-1" 
-                role="dialog" aria-labelledby="notification-label" data-backdrop="static" data-keyboard="false">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary">
-                            <h4 class="modal-title">
-                                <span class="glyphicon glyphicon-info-sign">
-                                </span> Confirmation
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <p id="text-message" class="text-message"></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-success" data-dismiss="modal">OK</button>
                         </div>
                     </div>
                 </div>
@@ -351,6 +377,40 @@
                 });
                 $('#modal-notification').modal('show');
             }
+            
+            function showConfirmation(message, status, callback, params) {
+                $('#modal-confirmation').on('show.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-confirmation').addClass('text-primary');
+                    } else {
+                        $('#text-confirmation').addClass('text-danger');
+                    }
+                    $('#text-confirmation').html(message);
+                    
+                    $('#btn-ok').on('click', function(event) {
+                        if(callback != null) {
+                            if(params != null) {
+                                callback(params);
+                            } else {
+                                callback();
+                            }
+                        }
+                    });
+                    
+                    
+                });
+                $('#modal-confirmation').on('hidden.bs.modal', function(event) {
+                    if(!status) {
+                        $('#text-confirmation').removeClass('text-primary');
+                    } else {
+                        $('#text-confirmation').removeClass('text-danger');
+                    }
+                    $('#btn-ok').off('click');
+                    $('#modal-confirmation').off('show.bs.modal');
+                    $('#modal-confirmation').off('hidden.bs.modal');
+                });
+                $('#modal-confirmation').modal('show');
+            }
 
             function loadDetailUser() {
                 $('#modal-loading').modal('show');
@@ -377,6 +437,8 @@
                         $('#mobile').val(data.mobile);
                         if(data.status == 1) {
                             $('#status-checkbox').prop('checked', true);
+                        } else if(data.status == 2) {
+                            $('#status-group').hide();
                         } else {
                             $('#status-checkbox').prop('checked', false);
                         }

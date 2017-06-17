@@ -57,6 +57,6 @@ class Customer extends Model {
      * @var list of street lighting
      */
     public function streetLightings() {
-        return $this->hasMany(streetLighting::class, 'customer_id', 'id');
+        return $this->hasMany(StreetLighting::class, 'customer_id', 'id');
     }
 }
