@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{trans('menu.survey')}} · {{trans('app.name')}}</title>
+        <title>{{trans('menu.report')}} · {{trans('form.search')}} · {{trans('app.name')}}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css">
@@ -80,8 +80,8 @@
                                 </ul>
                             </a>
                         </li>
-                        <li class="active"><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
-                        <li><a href="{{url('report')}}">{{trans('menu.report')}}</a></li>
+                        <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
+                        <li class="active"><a href="{{url('report')}}">{{trans('menu.report')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -107,10 +107,58 @@
         </nav>
         <div class="main-container">
             <div class="container">
-                <h3>{{trans('menu.survey')}}</h3>
+                <h3>{{trans('menu.report')}}</h3>
                 <div class="row">
-                    <form id="form-search" class="form-horizontal">
-                        <div class="form-group">
+                    <form id="form-search" class="form-horizontal" method="POST" action="{{url('/report/streetlightinglocation')}}">
+                        {{ csrf_field() }}
+                        <div id="report-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.report_name')}}</label>
+                            <div class="col-md-3">
+                                <select id="report" name="report" class="selectpicker form-control">
+                                    <option value="{{url('/report/streetlightinglocation')}}">Street Lighting Location</option>
+                                    <!--<option value="{{url('/report/surveyactivities')}}">Survey Activities</option>
+                                    <option value="{{url('/report/surveyor')}}">Surveyor List</option>-->
+                                </select>
+                                <span class="help-block">
+                                    <strong id="report-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
+                        <!--
+                        <div id="street-lighting-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.street_lighting')}}</label>
+                            <div class="col-md-3">
+                                <select id="street_lighting" name="street_lighting" class="selectpicker form-control">
+                                    <option value="all">All Street Lighting</option>
+                                    <option value="registered">Registered Only</option>
+                                    <option value="unregistered">Unregistered Only</option>
+                                </select>
+                                <span class="help-block">
+                                    <strong id="street-lighting-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div id="customer-name-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.customer_name')}}</label>
+                            <div class="col-md-4">
+                                <input id="customer_name" name="customer_name" type="text" class="form-control" placeholder="{{trans('form.customer_name_or_leave_blank_for_all_customer')}}">
+                                <span class="help-block">
+                                    <strong id="customer-name-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
+                        -->
+                        <!--
+                        <div id="surveyor-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.surveyor')}}</label>
+                            <div class="col-md-4">
+                                <input id="surveyor" name="surveyor" type="text" class="form-control" placeholder="{{trans('form.surveyor_ro_leave_blank_for_all_surveyor')}}">
+                                <span class="help-block">
+                                    <strong id="surveyor-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
                             <label for="date" class="col-md-2 control-label">{{trans('form.date_filter')}}</label>
                             <div class="col-md-3">
                                 <div id="from-date" class='input-group date' >
@@ -129,32 +177,43 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="status-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.status')}}</label>
+                            <div class="col-md-3">
+                                <select id="street_lighting" name="street_lighting" class="selectpicker form-control">
+                                    <option value="all">All Status</option>
+                                    <option value="0">Active Only</option>
+                                    <option value="1">Inactive Only</option>
+                                    <option value="2">Reset Only</option>
+                                </select>
+                                <span class="help-block">
+                                    <strong id="status-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
+                        -->
+                        <div id="format-group" class="form-group form-group-sm">
+                            <label class="col-md-2 control-label">{{trans('form.format_type')}}</label>
+                            <div class="col-md-2">
+                                <select id="format" name="format" class="selectpicker form-control">
+                                    <option value="pdf">PDF</option>
+                                    <!--<option value="xls">Microsoft Excel</option>
+                                    <option value="csv">CSV</option>-->
+                                </select>
+                                <span class="help-block">
+                                    <strong id="rate-help" class="help-text"></strong>
+                                </span>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
                                 <div class="btn-group-sm">
-                                    <button type="button" class="btn btn-default" onclick="doSearchForm();"><i class="fa fa-search fa-fw" aria-hidden="true"></i> {{trans('form.search')}}</button>
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-download fa-fw" aria-hidden="true"></i> {{trans('form.download')}}</button>
+                                    <button type="reset" class="btn btn-default"><i class="fa fa-refresh fa-fw" aria-hidden="true"></i> {{trans('form.reset')}}</button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                </div>
-
-                <div class="table-responsive">
-                    <table id="table-master" class="table table-striped table-hover"
-                        data-pagination="true"
-                        data-pagination-loop="false">
-                        <thead> 
-                            <tr>
-                                <th class="col-md-2" data-field="date_time" data-sortable="true">{{trans('form.date_time')}}</th>
-                                <th class="col-md-1" data-field="action">{{trans('form.action')}}</th>
-                                <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
-                                <th class="col-md-1" data-field="created_by">{{trans('form.created_by')}}</th>
-                                <!--<th class="col-md-1" data-field="status" data-formatter="statusFormatter">{{trans('form.status')}}</th>-->
-                                <!--<th class="col-md-1" data-formatter="actionFormatter"></th>-->
-                            </tr> 
-                        </thead> 
-                        <tbody></tbody> 
-                    </table>
                 </div>
             </div>  
 
@@ -226,93 +285,11 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-                $('#from-date').datetimepicker({
-                    format: 'DD-MM-YYYY',
-                    useCurrent: true
-                });
-                $('#to-date').datetimepicker({
-                    format: 'DD-MM-YYYY',
-                    useCurrent: true
-                });
-                initTables();
-                doSearchForm();
-            });
-
-            function initTables() {
-                $('#table-master').bootstrapTable({
-                    locale: 'en_US',
-                    classes: 'table table-striped table-hover table-borderless',
-                    formatLoadingMessage: function () {
-                        return '<span class="glyphicon glyphicon glyphicon-repeat glyphicon-animate"></span>';
-                    }
-                }); 
-            }
-
-            function doSearchForm() {
-                var data = new FormData();
-                data.append('from_date', $('input[name=from_date]').val());
-                data.append('to_date', $('input[name=to_date]').val());
-
-                $('#modal-loading').modal('show');
-                $.ajax({
-                    url: '{{url('/json/survey/search')}}',
-                    type: 'POST',
-                    data: data,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        $('#modal-loading').modal('hide');
-                        
-                        $('#table-master').bootstrapTable('removeAll');
-                        $('#table-master').bootstrapTable('load',response.data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        $('#modal-loading').modal('hide');
-                        var json = JSON.parse(xhr.responseText);
-                    }
-                });
-            }
-            
-            function doApproveSurveyConfirmation(id) {
                 
-            }
-            
-            function dateTimeFormatter(value, row, index) {
-                return '<a href="' + row.url + '">' + value + '</a>';
-            }
-            
-            function customerFormatter(value, row, index) {
-                if(row.customer_code != null) {
-                    return row.customer_code + ' - ' + row.customer_name;
-                } else {
-                    return row.customer_name;
-                }
-            }
-            
-            function statusFormatter(value, row, index) {
-                if(row.status == 0) {
-                    return '<p class="text-primary text-center">{{trans('form.new')}}</p>';
-                } else if(row.status == 2){
-                    return '<p class="text-danger text-center">{{trans('form.reject')}}</p>';
-                }
-            }
-            
-            function actionFormatter(value, row, index) {
-                var buttons = '<div class="btn-group-xs text-center">';
-                /*
-                if(row.status == 0) {
-                    buttons += ' <button class="btn btn-primary" onclick="doApproveSurveyConfirmation(' + 
-                        "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
-                } else if(row.status == 2) {
-                    buttons += ' <button class="btn btn-warning" onclick="doSurveyReapproveConfirmation(' + 
-                        "'" + row.id + "'" + ')"><i class="fa fa-check-square-o fa-fw" aria-hidden="true"></i></button>';
-                }
-                */
-                buttons += ' <button class="btn btn-danger" onclick="showSurveyDeleteConfirmation(' + 
-                        "'" + row.id + "'" + ')"><span class="glyphicon glyphicon-trash"></span></button>';
-                buttons += '</div>';
-                return buttons;
-            }
+                $('#report').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
+                    $('#form-search').prop('action', $(this).val());
+                });
+            });
         </script>
     </body>
 </html>

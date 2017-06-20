@@ -81,6 +81,7 @@
                             </a>
                         </li>
                         <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
+                        <li><a href="{{url('report')}}">{{trans('menu.report')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">

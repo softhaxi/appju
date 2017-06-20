@@ -91,6 +91,7 @@
                             </ul>
                         </li>
                         <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
+                        <li><a href="{{url('report')}}">{{trans('menu.report')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -319,7 +320,8 @@
                     },
                     replace: function (url, query) {
                         return url + '?query=' + query;
-                    }
+                    }, 
+                    cache: false
                 }
             });
             var unregisteredCustomerEngine = new Bloodhound({
@@ -340,7 +342,8 @@
                     },
                     replace: function (url, query) {
                         return url + '?query=' + query;
-                    }
+                    }, 
+                    cache: false
                 }
             });
             $(function() {
@@ -354,7 +357,8 @@
                 $('#keyword').typeahead({
                     hint: true,
                     highlight: true,
-                    minLenght: 1
+                    minLength: 1,
+                    limit: 10,
                 }, {
                     name: 'registeredCustome',
                     display: 'name',

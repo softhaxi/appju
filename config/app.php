@@ -155,7 +155,11 @@ return [
         APPJU\Providers\AuthServiceProvider::class,
         APPJU\Providers\EventServiceProvider::class,
         APPJU\Providers\RouteServiceProvider::class,
-
+        
+        /**
+         * PDF Service Providers
+         */
+        Barryvdh\DomPDF\ServiceProvider::class,
     ],
 
     /*
@@ -201,7 +205,10 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        /**
+         * PDF Provider Aliases
+         */
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];

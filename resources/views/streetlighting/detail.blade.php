@@ -67,6 +67,7 @@
                             </a>
                         </li>
                         <li><a href="{{url('survey')}}">{{trans('menu.survey')}}</a></li>
+                        <li><a href="{{url('report')}}">{{trans('menu.report')}}</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -252,7 +253,7 @@
                 </form>
                 </div>
 
-                
+                <!--
                 <div class="col-md-12">
                     <h4>{{trans('heading.street_lighting_location')}}</h4>
                     <div class="table-responsive">
@@ -272,6 +273,7 @@
                         </table>
                     </div>
                 </div>
+                -->
             </div>
 
             <div class="modal fade bs-example-modal-sm" id="modal-loading" tabindex="-1" 
@@ -373,13 +375,15 @@
             }
 
             function initTables() {
+                /**
                 $('#table-detail').bootstrapTable({
                     locale: 'en_US',
                     classes: 'table table-striped table-hover table-borderless',
                     formatLoadingMessage: function () {
                         return '<span class="glyphicon glyphicon glyphicon-repeat glyphicon-animate"></span>';
                     }
-                }); 
+                });
+                */
             }
 
             function loadDetailUser() {

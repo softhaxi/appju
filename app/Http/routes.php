@@ -43,15 +43,19 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', function () {
             return view('streetlighting.index');
         });
+        Route::get('/edit/{id}', function ($id) {
+            return view('streetlighting.edit')
+                ->with('id', $id);
+        });
+        Route::get('/location/{id}', function ($id) {
+            return view('streetlighting.location')
+                ->with('id', $id);
+        });
         Route::get('/unregistered', function () {
             return view('streetlighting.unregistered.index');
         });
         Route::get('/{id}', function ($id) {
             return view('streetlighting.detail')
-                ->with('id', $id);
-        });
-        Route::get('/edit/{id}', function ($id) {
-            return view('streetlighting.edit')
                 ->with('id', $id);
         });
     });
@@ -60,10 +64,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', function () {
             return view('survey.index');
         });
-        Route::get('/streetlighting/{id}', function($id) {
-            return view('streetlighting.survey')
-                ->with('id', $id);
+    });
+    
+    Route::group(['prefix' => 'report'], function() {
+        Route::get('/', function () {
+            return view('report.index');
         });
+        Route::post('/streetlightinglocation', 'Report\StreetLightingLocationController@download');
     });
 });
 

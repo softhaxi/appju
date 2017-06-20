@@ -211,7 +211,7 @@ class StreetLightingSurveyController extends Controller {
             
             if($streetlighting->customer_id == '') {
                 $customer = Customer::where('status', -1)
-                        ->orWhereRaw('LOWER(name) like ? ', array(strtolower(trim($params['name']))))
+                        ->whereRaw('LOWER(name) like ? ', array(strtolower(trim($params['name']))))
                         ->orderBy('created_at', 'desc')
                         ->first();
                 if(is_null($customer)) {
@@ -288,7 +288,7 @@ class StreetLightingSurveyController extends Controller {
 
 
             $lamp->street_lighting_id = array_key_exists('street_lighting_id', $params) ? trim($params['street_lighting_id']) : $lamp->street_lighting_id;
-            $lamp->code = array_key_exists('code', $params) ? trim($params['code']) : $lamp->code;
+            $lamp->code = array_key_exists('code', $params) ? strtoupper(trim($params['code'])) : $lamp->code;
             $lamp->type = array_key_exists('type', $params) ? strtoupper(trim($params['type'])) : $lamp->type;
             $lamp->power = array_key_exists('power', $params) ? $params['power'] : $lamp->power;
             $lamp->latitude = array_key_exists('latitude', $params) ? $params['latitude'] : $lamp->latitude;
