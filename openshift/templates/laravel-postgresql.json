@@ -142,18 +142,7 @@
     },
     "spec": {
       "strategy": {
-        "type": "Recreate",
-        "recreateParams": {
-          "pre": {
-            "failurePolicy": "Retry",
-            "execNewPod": {
-              "command": [
-                "./migrate-database.sh"
-              ],
-              "containerName": "laravel-pgsql-persistent"
-            }
-          }
-        }
+        "type": "Recreate"
       },
       "triggers": [{
         "type": "ImageChange",
