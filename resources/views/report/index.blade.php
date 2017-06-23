@@ -50,6 +50,7 @@
                 background-color: #ffffff;
             }
         </style>
+        <link href="{{url('/css/typeahead.css')}}" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -138,6 +139,7 @@
                                 </span>
                             </div>
                         </div>
+                        -->
                         <div id="customer-name-group" class="form-group form-group-sm">
                             <label class="col-md-2 control-label">{{trans('form.customer_name')}}</label>
                             <div class="col-md-4">
@@ -147,7 +149,6 @@
                                 </span>
                             </div>
                         </div>
-                        -->
                         <!--
                         <div id="surveyor-group" class="form-group form-group-sm">
                             <label class="col-md-2 control-label">{{trans('form.surveyor')}}</label>
@@ -278,7 +279,54 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.4/numeral.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/js/bootstrap-datetimepicker.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js'></script>
         <script>
+            var registeredCustomerEngine = new Bloodhound({
+                datumTokenizer: function (datum) {
+                    return Bloodhound.tokenizers.whitespace(datum.name);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                prefetch: {
+                    url: '{{url('/json/streetlighting/search')}}/',
+                    filter: function (result) {
+                        return $.map(result.data, function (index) {
+                            return {
+                                id: index.id,
+                                code: index.code,
+                                name: index.name,
+                                link: '{{url('/streetlighting/')}}/' + index.id
+                            };
+                        });
+                    },
+                    replace: function (url, query) {
+                        return url + '?query=' + query;
+                    }, 
+                    cache: false
+                }
+            });
+            var unregisteredCustomerEngine = new Bloodhound({
+                datumTokenizer: function (datum) {
+                    return Bloodhound.tokenizers.whitespace(datum.name);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                prefetch: {
+                    url: '{{url('/json/streetlighting/unregistered/search')}}/',
+                    filter: function (result) {
+                        return $.map(result.data, function (index) {
+                            return {
+                                id: index.id,
+                                name: index.name,
+                                link: '{{url('/streetlighting/')}}/' + index.id
+                            };
+                        });
+                    },
+                    replace: function (url, query) {
+                        return url + '?query=' + query;
+                    }, 
+                    cache: false
+                }
+            });
+            
             $(function () {
                 $.ajaxSetup({
                     headers: {
@@ -288,6 +336,48 @@
                 
                 $('#report').on('changed.bs.select', function (e, clickedIndex, newValue, oldValue) {
                     $('#form-search').prop('action', $(this).val());
+                });
+                registeredCustomerEngine.initialize();
+                unregisteredCustomerEngine.initialize();
+                $('#customer_name').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1,
+                    limit: 10,
+                }, {
+                    name: 'registeredCustome',
+                    display: 'name',
+                    source: registeredCustomerEngine.ttAdapter(),
+                    templates: {
+                        //header: '<h4 style="padding-left:5px">{{trans('menu.registered_street_lighting')}}</h4>',
+                        /*
+                        empty: [
+                            '<div class="noitems">',
+                            'No Result Found',
+                            '</div>'
+                        ].join('\n'),
+                        suggestion: function (data) {
+                            return '<p>' + data.name  + '</p>';
+                        }
+                        */
+                    }
+                }, {
+                    name: 'unregisteredCustome',
+                    display: 'name',
+                    source: unregisteredCustomerEngine.ttAdapter(),
+                    templates: {
+                        //header: '<h4 style="padding-left:5px">{{trans('menu.registered_street_lighting')}}</h4>',
+                        /*
+                        empty: [
+                            '<div class="noitems">',
+                            'No Result Found',
+                            '</div>'
+                        ].join('\n'),
+                        suggestion: function (data) {
+                            return '<p>' + data.name  + '</p>';
+                        }
+                        */
+                    }
                 });
             });
         </script>
