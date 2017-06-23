@@ -46,7 +46,7 @@ class StreetLightingLocationController extends Controller {
         $pdf->AliasNbPages();
         $pdf->SetAutoPageBreak(true, 40);
         $customers = $this->getCustomers($params);
-        if(is_null($customers)) {
+        if(is_null($customers) || count($customers) == 0) {
             $pdf->AddPage();
             $pdf->SetFont('Times', 'I', 8);
             $pdf->Cell(0, 13, 'Printed By: '. $params['user'], 0, 1, 'R');
