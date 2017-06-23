@@ -4,12 +4,15 @@ namespace APPJU\Http\Controllers\Master;
 
 use Auth;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 
 use APPJU\Http\Requests;
 use APPJU\Http\Controllers\Controller;
 use APPJU\Models\Master\Customer;
 use APPJU\Models\Detail\StreetLighting;
+use APPJU\Models\Detail\StreetLightingLamp;
 
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
@@ -429,18 +432,57 @@ class StreetLightingController extends Controller {
         $data = [];
         
         foreach ($streetLightings as $streetLighting) {
-            
+            $createdAt = new Carbon($streetLighting->created_at);
             $item = [
                 'id' => $streetLighting->id,
                 'customer_id' => $streetLighting->customer->id,
+                'customer_code' => $streetLighting->customer->code,
                 'customer_name' => $streetLighting->customer->name,
                 'photo' => $streetLighting->photo,
                 'latitude' =>  $streetLighting->latitude,
                 'longitude' => $streetLighting->longitude,
-                'number_of_lamp' => $streetLighting->number_of_lamp
+                'number_of_lamp' => $streetLighting->number_of_lamp,
+                'survey_date' => $createdAt->toFormattedDateString()
             ];
             $data[] = $item;
         }
+        
+        return response()->json([
+                        'code' => 200,
+                        'status' => 'OK',
+                        'response' => 'Ok',
+                        'data' => $data], 200);
+    }
+    
+    public function locationView(Request $request, $id=null) {
+        if(is_null($id)) {
+            return $this->location($request);
+        }
+        
+        if(!is_null($id)) {
+            $streetLighting = $this->getStreetLightingById($id);
+        } 
+        if(is_null($streetLighting)) {
+            return response()->json([
+                    'code' => 404,
+                    'type' => 'NOT_FOUND',
+                    'reason' => 'Resource not found',
+                    'errors' => 'Street lighting not found',
+                    'redirect' => '/streetlighting'], 404);
+        }
+        $createdAt = new Carbon($streetLighting->created_at);
+        $data = [
+            'id' => $streetLighting->id,
+            'customer_id' => $streetLighting->customer->id,
+            'customer_code' => $streetLighting->customer->code,
+            'customer_name' => $streetLighting->customer->name,
+            'photo' => $streetLighting->photo,
+            'latitude' =>  $streetLighting->latitude,
+            'longitude' => $streetLighting->longitude,
+            'number_of_lamp' => $streetLighting->number_of_lamp,
+            'survey_date' => $createdAt->toFormattedDateString(),
+            'lamps' => $streetLighting->lamps
+        ];
         
         return response()->json([
                         'code' => 200,
@@ -651,5 +693,18 @@ class StreetLightingController extends Controller {
                 ->get();
         
         return $streetLightings->all();
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    private function getStreetLightingById($id) {
+        $streetLighting = StreetLighting::with('lamps')
+                ->where('id', $id)
+                ->first();
+
+        return $streetLighting;
     }
 }

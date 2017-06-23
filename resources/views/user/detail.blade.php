@@ -112,7 +112,6 @@
                         <div class="col-md-2">
                             <div class="text-center">
                                 <img src="http://placehold.it/100" class="avatar img-circle" alt="Avatar"/>
-                                
                             </div>
                         </div>
                         <div class="col-md-6">

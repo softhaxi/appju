@@ -2,6 +2,7 @@
 
 return [
     'administrator_signin_form' => 'Administrator Sign In Form',
+    'lamp_details' => 'Lamp Details',
     'street_lighting_detail' => 'Street Lighting Detail',
     'street_lighting_location' => 'Steeet Lighting Location',
     'survey_data' => 'Survey Data',

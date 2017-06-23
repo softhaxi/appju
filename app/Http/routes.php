@@ -98,6 +98,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/delete', 'Master\StreetLightingController@delete');
             Route::post('/import', 'Master\StreetLightingController@import');
             Route::post('/location', 'Master\StreetLightingController@location');
+            Route::get('/location/{id}', 'Master\StreetLightingController@locationView');
             Route::get('/search', 'Master\StreetLightingController@search');
             Route::post('/search', 'Master\StreetLightingController@search');
             Route::post('/status', 'Master\StreetLightingController@status');

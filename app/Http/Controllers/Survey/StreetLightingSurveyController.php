@@ -66,7 +66,7 @@ class StreetLightingSurveyController extends Controller {
         $params = $request->all();
         $params['survey_status'] = 1;
         $params['level'] = 1;
-        $params['url'] = '/survey/streetlighting';
+        $params['url'] = '/streetlighting/location/';
         $params['action'] = 'CREATE';
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];
@@ -131,7 +131,7 @@ class StreetLightingSurveyController extends Controller {
         $params['survey_status'] = 1;
         $params['parent_id'] = $params['parent_survey_id'];
         $params['action'] = 'CREATE';
-        $params['url'] = '/survey/streetlighting/lamp';
+        $params['url'] = '/streetlighting/location/lamp/';
         $params['level'] = 1;
         if (array_key_exists('user_id', $params)) {
             $params['created_by'] = $params['user_id'];

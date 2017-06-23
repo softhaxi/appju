@@ -236,6 +236,16 @@
                                 </div>
                             </div>
                             <div id="status-group" class="form-group mb5">
+                                <label class="col-md-4 control-label">{{trans('form.status')}}</label>
+                                <div class="col-md-4">
+                                    <input id="status" name="status" type="text" class="form-control" placeholder="{{trans('form.status')}}">
+                                    <span class="help-block">
+                                        <strong id="status-help" class="help-text"></strong>
+                                    </span>
+                                </div>
+                            </div>
+                            <!--
+                            <div id="status-group" class="form-group mb5">
                                 <div class="col-md-offset-4 col-md-6">
                                     <input type="checkbox" id="status-checkbox" name="status-checkbox"> {{trans('form.active')}}
                                     <span class="help-block">
@@ -243,6 +253,7 @@
                                     </span>
                                 </div>
                             </div>
+                            -->
                         </div>
                     </div>
                     <div class="btn-group-sm pull-right">
@@ -343,7 +354,7 @@
                 });
             
                 initTables();
-                loadDetailUser();
+                loadDetail();
             });
 
             function showNotification(message, status, callback, params) {
@@ -386,7 +397,7 @@
                 */
             }
 
-            function loadDetailUser() {
+            function loadDetail() {
                 $('#modal-loading').modal('show');
                 $.ajax({
                     type: 'GET',
@@ -432,12 +443,15 @@
                         $('#monthly_bill').val(data.monthly_bill);
                         $('#monthly_bill').prop('disabled', true);
                         if(data.status == 1) {
-                            $('#status-checkbox').prop('checked', true); 
+                            $('#status').val('{{trans('form.active')}}');
+                            //$('#status-checkbox').prop('checked', true); 
                             $('#btn-activate').hide();
                         } else {
-                            $('#status-checkbox').prop('checked', false);
+                            $('#status').val('{{trans('form.inactive')}}');
+                            //$('#status-checkbox').prop('checked', false);
                             $('#btn-deactivate').hide();
                         }
+                        $('#status').prop('disabled', true);
                         $('#status-checkbox').prop('disabled', true);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

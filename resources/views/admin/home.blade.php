@@ -60,6 +60,7 @@
             }
         </style>
         <link href="{{url('/css/typeahead.css')}}" rel="stylesheet">
+        <link href="{{url('/css/infowindow.css')}}" rel="stylesheet">
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -268,22 +269,49 @@
                                 parseFloat(item.longitude));
                             var marker = new google.maps.Marker({
                                 map: map,
-                                position: point
+                                position: point,
+                                title: item.customer_name
                             });
+                            var customer = item.customer_name;
+                            if(item.customer_code != 'DUMMY') {
+                                customer = item.customer_code + ' - ' + item.customer_name;
+                            }
+                            var contentString = '<div class="iw-container">' +
+                                '<h5 class="iw-title">'+customer+'</h5>'+
+                                '<div id="iw-content"><img class="pull-right" src="http://placehold.it/90"/>' +
+                                '<div><p><strong>{{trans('form.location')}}</strong><br/>' +
+                                '{{trans('form.latitude')}}: ' + item.latitude + '<br/>' +
+                                '{{trans('form.longitude')}}: ' + item.longitude + '<br/>' +
+                                '<strong>{{trans('form.details')}}</strong><br/>'+
+                                '{{trans('form.survey_date')}}: ' + item.survey_date + ' <br/>' +
+                                '{{trans('form.number_of_lamp')}}: ' + item.number_of_lamp + ' {{trans('form.lamp_s')}}<br/>' +
+                                '<p><a href="{{url('/streetlighting/location')}}/' + item.id +'">{{trans('form.more_info')}}</a> '+
+                                '.</p></div>'+
+                                '</div>'+
+                                '</div>';
                             var content = '<h5>' + item.customer_name + '</h5>'
-                                        + '<p>Latitude : <strong>' + item.latitude + '</strong></p>'
+                                        + '<p>{{trans('form.latitude')}} : <strong>' + item.latitude + '</strong></p>'
                                         + '<p>Longitude : <strong>' + item.longitude + '</strong></p>'
                                         + '<p>Number of Lamp : <strong>' + item.number_of_lamp + '</strong></p>'
-                                        + '<a href="{{url('/streetlighting')}}/' + item.customer_id +'">More Info</a>';
+                                        + '<a href="{{url('/streetlighting/location')}}/' + item.id +'">More Info</a>';
                             var infoWindow = new google.maps.InfoWindow();
-                            google.maps.event.addListener(marker,'click', (function(marker,content,infoWindow){ 
+                            google.maps.event.addListener(marker,'click', (function(marker,contentString,infoWindow){ 
                                 return function() {
                                     if(currentInfoWindow) currentInfoWindow.close();
-                                    infoWindow.setContent(content);
+                                    infoWindow.setContent(contentString);
                                     infoWindow.open(map,marker);
                                     currentInfoWindow = infoWindow;
                                 };
-                            })(marker,content,infoWindow)); 
+                            })(marker,contentString,infoWindow)); 
+                            /*
+                            google.maps.event.addListener(infoWindow, 'domready', function() {
+                                var iwOuter = $('.gm-style-iw');
+                                var iwBackground = iwOuter.prev();
+                                iwBackground.children(':nth-child(2)').css({'display' : 'none'});
+                                iwBackground.children(':nth-child(4)').css({'display' : 'none'});
+                                iwOuter.parent().parent().css({left: '115px'});
+                            });
+                            */
                             markers.push(marker);
                             bounds.extend(point);
                         });

@@ -145,7 +145,7 @@
                         data-pagination-loop="false">
                         <thead> 
                             <tr>
-                                <th class="col-md-2" data-field="date_time" data-sortable="true">{{trans('form.date_time')}}</th>
+                                <th class="col-md-2" data-field="date_time" data-formatter="dateTimeFormatter" data-sortable="true">{{trans('form.date_time')}}</th>
                                 <th class="col-md-1" data-field="action">{{trans('form.action')}}</th>
                                 <th data-formatter="customerFormatter">{{trans('form.customer')}}</th>
                                 <th class="col-md-1" data-field="created_by">{{trans('form.created_by')}}</th>

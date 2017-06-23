@@ -6,6 +6,7 @@ use APPJU\Models\Common\BaseModel as Model;
 
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Master\Customer;
+use APPJU\Models\Detail\StreetLightingLamp;
 
 /**
  * Definition of Street Lighting
@@ -78,6 +79,6 @@ class StreetLighting extends Model {
      * @return list of lamp
      */
     public function lamps() {
-        return $this->hasMany(StreetLigtingLamp::class, 'street_lighting_id', 'id');
+        return $this->hasMany(StreetLightingLamp::class, 'street_lighting_id', 'id');
     }
 }
