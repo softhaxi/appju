@@ -317,7 +317,7 @@ class StreetLightingSurveyController extends Controller {
                 $photo->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $photo->created_by;
                 $encodedPhoto = $params['encoded_photo'];
                 if(!empty($encodedPhoto)) {
-                    $path = '/upload/streetlighting/' . $streetlighting->id . '.png';
+                    $path = '/upload/streetlighting/lamp/' . $lamp->id . '.png';
                     $destination = base_path() . '/public' . $path;
                     file_put_contents($destination, base64_decode($encodedPhoto));
                     $photo->path = $path;

@@ -433,12 +433,17 @@ class StreetLightingController extends Controller {
         
         foreach ($streetLightings as $streetLighting) {
             $createdAt = new Carbon($streetLighting->created_at);
+            if(!is_null($streetLighting->photo)) {
+                $photo = url($streetLighting->photo->path);
+            } else {
+                $photo = null;
+            }
             $item = [
                 'id' => $streetLighting->id,
                 'customer_id' => $streetLighting->customer->id,
                 'customer_code' => $streetLighting->customer->code,
                 'customer_name' => $streetLighting->customer->name,
-                'photo' => $streetLighting->photo,
+                'photo' => $photo,
                 'latitude' =>  $streetLighting->latitude,
                 'longitude' => $streetLighting->longitude,
                 'number_of_lamp' => $streetLighting->number_of_lamp,
@@ -471,12 +476,17 @@ class StreetLightingController extends Controller {
                     'redirect' => '/streetlighting'], 404);
         }
         $createdAt = new Carbon($streetLighting->created_at);
+        if(!is_null($streetLighting->photo)) {
+            $photo = url($streetLighting->photo->path);
+        } else {
+            $photo = null;
+        }
         $data = [
             'id' => $streetLighting->id,
             'customer_id' => $streetLighting->customer->id,
             'customer_code' => $streetLighting->customer->code,
             'customer_name' => $streetLighting->customer->name,
-            'photo' => $streetLighting->photo,
+            'photo' => $photo,
             'latitude' =>  $streetLighting->latitude,
             'longitude' => $streetLighting->longitude,
             'number_of_lamp' => $streetLighting->number_of_lamp,

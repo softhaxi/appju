@@ -99,8 +99,8 @@
                     <input type="hidden" name="id" value="{{$id}}"/>
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="text-center">
-                                <img src="http://placehold.it/200" class="avatar img-circle" alt="Avatar"/>
+                            <div id="photo" class="text-center">
+                                
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -326,6 +326,13 @@
                         
                         $('#table-detail').bootstrapTable('removeAll');
                         $('#table-detail').bootstrapTable('load',response.data.lamps);
+                        
+                        var photo = '<img src="http://placehold.it/200" class="avatar img-circle" alt="Avatar"/>';
+                        
+                        if(data.photo != null) {
+                            photo = '<img id="" src="' + data.photo +'" class="avatar img-circle" alt="Avatar" width="200" height="200"/>';
+                        }
+                        $('#photo').html(photo);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         $('#modal-loading').modal('hide');

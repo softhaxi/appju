@@ -276,9 +276,13 @@
                             if(item.customer_code != 'DUMMY') {
                                 customer = item.customer_code + ' - ' + item.customer_name;
                             }
+                            var photo = '<img class="pull-right" src="http://placehold.it/90"/>';
+                            if(item.photo != null) {
+                                photo = '<img class="pull-right" src="'+ item.photo +'" height="90"/>';
+                            } 
                             var contentString = '<div class="iw-container">' +
                                 '<h5 class="iw-title">'+customer+'</h5>'+
-                                '<div id="iw-content"><img class="pull-right" src="http://placehold.it/90"/>' +
+                                '<div id="iw-content">' + photo +
                                 '<div><p><strong>{{trans('form.location')}}</strong><br/>' +
                                 '{{trans('form.latitude')}}: ' + item.latitude + '<br/>' +
                                 '{{trans('form.longitude')}}: ' + item.longitude + '<br/>' +
