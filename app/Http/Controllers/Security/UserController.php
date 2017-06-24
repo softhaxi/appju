@@ -130,7 +130,7 @@ class UserController extends Controller {
         $params = $request->all();
         $params['password'] = bcrypt('password123');
         $params['level'] = 2;
-        $params['status'] = 1;
+        $params['status'] = 2;
         $params['created_by'] = Auth::user()->id;
         $user = $this->saveUser($params);
         

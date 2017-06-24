@@ -47,7 +47,7 @@ class SurveyController extends Controller {
                     'created_by' => $user->name,
                     'status' => $survey->status,
                     'base_url' => url($survey->url),
-                    'url' => url($survey->url . '/' . $survey->surveyable->id)
+                    'url' => url($survey->url . $survey->surveyable->id)
                 ];
             } else {
                 $item = [
@@ -61,7 +61,7 @@ class SurveyController extends Controller {
                     'created_by' => $user->name,
                     'status' => $survey->status,
                     'base_url' => url($survey->url),
-                    'url' => url($survey->url . '/' . $survey->surveyable->id)
+                    'url' => url($survey->url . $survey->surveyable->id)
                 ];
             }
             $data[] = $item;

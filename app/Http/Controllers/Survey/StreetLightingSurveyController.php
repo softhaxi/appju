@@ -191,7 +191,7 @@ class StreetLightingSurveyController extends Controller {
 
 
             $streetlighting->customer_id = array_key_exists('customer_id', $params) ? trim($params['customer_id']) : $streetlighting->customer_id;
-            $streetlighting->name = array_key_exists('name', $params) ? trim($params['name']) : $streetlighting->name;
+            $streetlighting->customer_name = array_key_exists('customer_name', $params) ? trim($params['customer_name']) : $streetlighting->name;
             $streetlighting->address = array_key_exists('address', $params) ? trim($params['address']) : $streetlighting->address;
             $streetlighting->power = array_key_exists('power', $params) ? trim($params['power']) : $streetlighting->power;
             $streetlighting->rate = array_key_exists('power', $params) ? trim($params['rate']) : $streetlighting->rate;
@@ -199,6 +199,9 @@ class StreetLightingSurveyController extends Controller {
             $streetlighting->latitude = array_key_exists('latitude', $params) ? $params['latitude'] : $streetlighting->latitude;
             $streetlighting->longitude = array_key_exists('longitude', $params) ? $params['longitude'] : $streetlighting->longitude;
             $streetlighting->geolocation = array_key_exists('geolocation', $params) ? trim($params['geolocation']) : $streetlighting->geolocation;
+            $streetlighting->remark = array_key_exists('remark', $params) ? trim($params['remark']) : $streetlighting->remark;
+            $streetlighting->pole = array_key_exists('remark', $params) ? trim($params['pole']) : $streetlighting->pole;
+            $streetlighting->name = array_key_exists('remark', $params) ? trim($params['name']) : $streetlighting->name;
             $streetlighting->status = array_key_exists('status', $params) ? $params['status'] : $streetlighting->status;
             $streetlighting->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $streetlighting->created_by;
     
@@ -211,13 +214,13 @@ class StreetLightingSurveyController extends Controller {
             
             if($streetlighting->customer_id == '') {
                 $customer = Customer::where('status', -1)
-                        ->whereRaw('LOWER(name) like ? ', array(strtolower(trim($params['name']))))
+                        ->whereRaw('LOWER(name) like ? ', array(strtolower(trim($params['customer_name']))))
                         ->orderBy('created_at', 'desc')
                         ->first();
                 if(is_null($customer)) {
                     $customer = new Customer();
                     $customer->code = 'DUMMY';
-                    $customer->name = array_key_exists('name', $params) ? strtoupper(trim($params['name'])) : $customer->name;
+                    $customer->name = array_key_exists('customer_name', $params) ? strtoupper(trim($params['customer_name'])) : $customer->name;
                     $customer->address = array_key_exists('address', $params) ? ucfirst(trim($params['address'])) : $customer->address;
                     $customer->power = array_key_exists('power', $params) ? trim($params['power']) : $customer->power;
                     $customer->rate = array_key_exists('power', $params) ? trim($params['rate']) : $customer->rate;

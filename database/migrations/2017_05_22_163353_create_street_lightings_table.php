@@ -15,7 +15,7 @@ class CreateStreetLightingsTable extends Migration
         Schema::create('street_lightings', function (Blueprint $table) {
             $table->string('id', 36);
             $table->string('customer_id', 36)->nullable();
-            $table->string('name', 100)->nullable();
+            $table->string('customer_name', 100)->nullable();
             $table->string('address')->nullable();
             $table->bigInteger('power')->nullable();
             $table->string('rate')->nullable();
@@ -23,6 +23,9 @@ class CreateStreetLightingsTable extends Migration
             $table->float('latitude')->default(0);
             $table->float('longitude')->default(0);
             $table->string('geolocation')->nullable();
+            $table->string('remark')->nullable();
+            $table->string('pole')->nullable();
+            $table->string('name')->nullable();
             $table->integer('status')->default(0);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
