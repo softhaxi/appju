@@ -14,6 +14,7 @@ class CreateStreetLightingsTable extends Migration
     {
         Schema::create('street_lightings', function (Blueprint $table) {
             $table->string('id', 36);
+            $table->string('mobile_id', 36)->nullable();
             $table->string('customer_id', 36)->nullable();
             $table->string('customer_name', 100)->nullable();
             $table->string('address')->nullable();

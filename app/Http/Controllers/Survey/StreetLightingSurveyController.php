@@ -174,9 +174,19 @@ class StreetLightingSurveyController extends Controller {
         if (array_key_exists('id', $params)) {
             $survey = $this->getSurveyById($params['id']);
             $streetlighting = $survey->surveyable();
+        } else if(array_key_exists('mobile_survey_id', $params)) {
+            $streetlighting = $this->getStreetLightingByMobileId($params['mobile_survey_id']);
+        }
+        
+        if($streetlighting != null) {
+            if($streetlighting->survey() != null) {
+                $survey = $streetlighting->survey();
+            } else {
+                $survey = new Survey();
+            }
         } else {
-            $survey = new Survey();
             $streetlighting = new StreetLighting();
+            $survey = new Survey();
         }
 
         $data = [];
@@ -189,7 +199,7 @@ class StreetLightingSurveyController extends Controller {
             $survey->status = array_key_exists('survey_status', $params) ? $params['survey_status'] : $survey->status;
             $survey->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $survey->created_by;
 
-
+            $streetlighting->mobile_id = array_key_exists('mobile_survey_id', $params) ? trim($params['mobile_survey_id']) : $streetlighting->mobile_id;
             $streetlighting->customer_id = array_key_exists('customer_id', $params) ? trim($params['customer_id']) : $streetlighting->customer_id;
             $streetlighting->customer_name = array_key_exists('customer_name', $params) ? trim($params['customer_name']) : $streetlighting->name;
             $streetlighting->address = array_key_exists('address', $params) ? trim($params['address']) : $streetlighting->address;
@@ -274,9 +284,18 @@ class StreetLightingSurveyController extends Controller {
         if (array_key_exists('id', $params)) {
             $survey = $this->getSurveyById($params['id']);
             $lamp = $survey->surveyable();
+        } else if(array_key_exists('mobile_survey_id', $params)) {
+            $lamp = $this->getStreetLightingLampByMobileId($params['mobile_survey_id']);
+        } 
+        if($lamp != null) {
+            if($lamp->survey() != null) {
+                $survey = $streetlighting->survey();
+            } else {
+                $survey = new Survey();
+            }
         } else {
-            $survey = new Survey();
             $lamp = new Lamp();
+            $survey = new Survey();
         }
 
         $data = [];
@@ -289,7 +308,7 @@ class StreetLightingSurveyController extends Controller {
             $survey->status = array_key_exists('survey_status', $params) ? $params['survey_status'] : $survey->status;
             $survey->created_by = array_key_exists('created_by', $params) ? $params['created_by'] : $survey->created_by;
 
-
+            $lamp->mobile_id = array_key_exists('mobile_survey_id', $params) ? trim($params['mobile_survey_id']) : $lamp->mobile_id;
             $lamp->street_lighting_id = array_key_exists('street_lighting_id', $params) ? trim($params['street_lighting_id']) : $lamp->street_lighting_id;
             $lamp->code = array_key_exists('code', $params) ? strtoupper(trim($params['code'])) : $lamp->code;
             $lamp->type = array_key_exists('type', $params) ? strtoupper(trim($params['type'])) : $lamp->type;
@@ -337,5 +356,4 @@ class StreetLightingSurveyController extends Controller {
         }
         return $data;
     }
-
 }

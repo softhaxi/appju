@@ -70,6 +70,7 @@ class StreetLightingLocationController extends Controller {
                     $pdf->Ln(40);
                 }
                 $markers = '';
+                $paths = '&path=color:0xff0000ff|weight:3';
                 $streetLightings = $this->getStreetLightingsByCustomer($customer->id);
                 $pdf->SetFont('Times', 'B', 11);
                 $pdf->Cell(60, 13, trans('form.customer'));
@@ -126,21 +127,31 @@ class StreetLightingLocationController extends Controller {
                 $i = 1;
                 $j = 1;
                 foreach($streetLightings as $streetLighting) {
-                    $markers .= '&markers=size:mid|label:' . $i . '|' . $streetLighting->latitude . ',' . $streetLighting->longitude;
+                    $markers .= '&markers=color:orange|size:mid|label:' . $i . '|' . $streetLighting->latitude . ',' . $streetLighting->longitude;
+                    $paths .= '|' . $streetLighting->latitude . ',' . $streetLighting->longitude;
                     $pdf->Cell(27,6,$i,'LR',0,'L');
                     $carbon = new Carbon($streetLighting->created_at);
                     $pdf->Cell(120,6,$carbon->format('d/m/Y'),'LR',0,'L');
                     $pdf->Cell(90,6,$streetLighting->latitude,'LR',0,'R');
                     $pdf->Cell(90,6,$streetLighting->longitude,'LR',0,'R');
                     $lamps = $this->getLampsByStreetLighting($streetLighting->id);
-                    foreach($lamps as $lamp) {
-                        if($j > 1) {
-                            $pdf->setX(355);
+                    if(count($lamps) > 0) {
+                        foreach($lamps as $lamp) {
+                            if($j > 1) {
+                                $pdf->setX(355);
+                            }
+                            $pdf->Cell(100,6,$lamp->code,'LR',0,'L');
+                            $pdf->Cell(100,6,$lamp->type,'LR',0,'L');
+                            $pdf->Cell(50,6,number_format($lamp->power),'LR',0,'R');
+                            $pdf->Cell(200,6,$lamp->remark,'LR',0,'L');
+                            $pdf->Ln(15);
+                            $j++;
                         }
-                        $pdf->Cell(100,6,$lamp->code,'LR',0,'L');
-                        $pdf->Cell(100,6,$lamp->type,'LR',0,'L');
-                        $pdf->Cell(50,6,number_format($lamp->power),'LR',0,'R');
-                        $pdf->Cell(200,6,$lamp->remark,'LR',0,'L');
+                    } else {
+                        $pdf->Cell(100,6,'','LR',0,'L');
+                        $pdf->Cell(100,6,'','LR',0,'L');
+                        $pdf->Cell(50,6,'','LR',0,'R');
+                        $pdf->Cell(200,6,'','LR',0,'L');
                         $pdf->Ln(15);
                         $j++;
                     }
@@ -156,7 +167,7 @@ class StreetLightingLocationController extends Controller {
                 $pdf->SetFont('Times', 'B', 11);
                 $pdf->Cell(40, 13, 'Map Visualization');
                 $pdf->Ln(25);
-                $pdf->Image('https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyAFIGWd-ZciDro507btwASHQi-sasDBvBo&size=500x300&scale=2' . $markers,
+                $pdf->Image('https://maps.googleapis.com/maps/api/staticmap?key=AIzaSyAFIGWd-ZciDro507btwASHQi-sasDBvBo&size=500x300&scale=2' . $markers . $paths,
                         45,$pdf->GetY(),0,0,'PNG');
             }
         }

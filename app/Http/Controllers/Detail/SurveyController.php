@@ -9,6 +9,7 @@ use APPJU\Http\Controllers\Controller;
 use APPJU\Models\Security\User;
 use APPJU\Models\Detail\Survey;
 use APPJU\Models\Detail\StreetLighting;
+use APPJU\Models\Detail\StreetLightingLamp;
 use APPJU\Models\Master\Customer;
 
 /**
@@ -110,5 +111,31 @@ class SurveyController extends Controller {
                 ->first();
 
         return $customer;
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    protected function getStreetLightingByMobileId($id) {
+        $streetligthing = StreetLighting::with('survey')
+            ->where('mobile_id', $id)
+            ->first();
+
+        return $streetligthing;
+    }
+    
+    /**
+     * 
+     * @param type $id
+     * @return type
+     */
+    protected function getStreetLightingLampByMobileId($id) {
+        $lamp = StreetLightingLamp::with('survey')
+            ->where('mobile_id', $id)
+            ->first();
+
+        return $lamp;
     }
 }
