@@ -17,18 +17,19 @@
             }
             body {
                 width: 100%;
-                margin: 0;
                 padding: 55px 0px 0px 0px;
+                clear: both;
             }
             .navbar-container {
                 padding: 0px 10px 0px 0px;
             }
             .main-container {
-                height: 100%;
+                min-height: 100%;
                 left: 0px;
                 right: 0px;
                 top: 50px;
                 bottom: 30px;
+                margin-bottom: 50px;
             }
             .content-container {
                 top: 50px;
@@ -138,7 +139,8 @@
                 <div class="table-responsive">
                     <table id="table-master" class="table table-striped table-hover"
                         data-pagination="true"
-                        data-pagination-loop="false">
+                        data-pagination-loop="false"
+                        data-pagination-v-align="top">
                         <thead class="text-center"> 
                             <tr>
                                 <th class="col-sm-2" data-field="code" data-sortable="true" data-formatter="codeFormatter">{{trans('form.customer_number')}}</th>
