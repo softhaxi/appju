@@ -466,7 +466,7 @@ class UserController extends Controller {
                     return $user;
                 }
             } else if($user->level == 1) {
-                return $user;
+                return null;
             }
         } else {
             return null;
