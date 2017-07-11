@@ -262,11 +262,11 @@ class UserController extends Controller {
         $user = $this->getUserById($request->input('id'));
         if(is_null($user)) {
             return response()->json([
-                    'code' => 404,
-                    'type' => 'NOT_FOUND',
-                    'reason' => 'Resource not found',
-                    'errors' => 'User not found',
-                    'redirect' => '/user'], 404);
+                    'code' => 400,
+                    'type' => 'BAD_ARG',
+                    'reason' => 'Invalid or bad argument',
+                    'errors' => 'Username or password is invalid',
+                    'redirect' => '/user'], 400);
         }
         if($request->input('action') == 'activate') {
             $user->status = 1;
@@ -450,6 +450,7 @@ class UserController extends Controller {
             'password' => $params['password']
         ];
 
+        $user = null;
         if(Auth::attempt($credentials)) {
             $user = Auth::user();
         }
